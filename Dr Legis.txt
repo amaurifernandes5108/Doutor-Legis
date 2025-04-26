@@ -1,0 +1,128 @@
+import os
+import zipfile
+
+project_structure = {
+    "dr_legis_backend/": [
+        "main.py",
+        "requirements.txt",
+        "Procfile",
+        ".env.example"
+    ],
+    "dr_legis_backend/routers/": [
+        "consultoria.py",
+        "artigos.py",
+        "calculos.py"
+    ],
+    "dr_legis_backend/services/": [
+        "openai_service.py",
+        "calculadora.py"
+    ]
+}
+
+file_contents = {
+    "main.py": '''
+from fastapi import FastAPI
+from routers import consultoria, artigos, calculos
+
+app = FastAPI(title="Dr. Legis - Super APP Jurídico")
+
+app.include_router(consultoria.router)
+app.include_router(artigos.router)
+app.include_router(calculos.router)
+
+@app.get("/")
+def read_root():
+    return {"mensagem": "Bem-vindo ao backend do Dr. Legis!"}
+''',
+    "requirements.txt": "fastapi\nuvicorn\nopenai\npydantic\npython-dotenv",
+    "Procfile": "web: uvicorn main:app --host 0.0.0.0 --port 8000",
+    ".env.example": "OPENAI_API_KEY=coloque_sua_chave_aqui",
+    "routers/consultoria.py": '''
+from fastapi import APIRouter
+from pydantic import BaseModel
+from services.openai_service import obter_resposta
+
+router = APIRouter(prefix="/consultoria", tags=["Consultoria Jurídica"])
+
+class Consulta(BaseModel):
+    pergunta: str
+
+@router.post("/")
+def responder_pergunta(consulta: Consulta):
+    resposta = obter_resposta(consulta.pergunta)
+    return {"resposta": resposta}
+''',
+    "routers/artigos.py": '''
+from fastapi import APIRouter
+
+router = APIRouter(prefix="/artigos", tags=["Biblioteca de Direitos"])
+
+@router.get("/")
+def listar_artigos():
+    return [
+        {"id": 1, "titulo": "Direito do Consumidor: Seus principais direitos"},
+        {"id": 2, "titulo": "Como pedir pensão alimentícia"},
+    ]
+''',
+    "routers/calculos.py": '''
+from fastapi import APIRouter
+from pydantic import BaseModel
+from services.calculadora import calcular_rescisao
+
+router = APIRouter(prefix="/calculos", tags=["Ferramentas de Cálculo"])
+
+class DadosRescisao(BaseModel):
+    salario: float
+    tempo_servico: int
+
+@router.post("/rescisao")
+def simular_rescisao(dados: DadosRescisao):
+    resultado = calcular_rescisao(dados.salario, dados.tempo_servico)
+    return resultado
+''',
+    "services/openai_service.py": '''
+import openai
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+def obter_resposta(pergunta: str) -> str:
+    prompt = f"Você é o Dr. Legis, especialista em direito brasileiro. Responda em linguagem simples: {pergunta}"
+    try:
+        resposta = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": prompt}]
+        )
+        return resposta.choices[0].message.content.strip()
+    except Exception as e:
+        return f"Erro ao processar a pergunta: {str(e)}"
+''',
+    "services/calculadora.py": '''
+def calcular_rescisao(salario: float, tempo_servico: int):
+    aviso_prev = salario
+    ferias = salario / 12 * tempo_servico
+    decimo_terceiro = salario / 12 * tempo_servico
+    total = aviso_prev + ferias + decimo_terceiro
+    return {
+        "aviso_previo": aviso_prev,
+        "ferias_proporcionais": ferias,
+        "decimo_terceiro": decimo_terceiro,
+        "total_estimado": total
+    }
+'''
+}
+
+zip_filename = "dr_legis_backend.zip"
+with zipfile.ZipFile(zip_filename, "w") as zipf:
+    for folder, files in project_structure.items():
+        for file in files:
+            folder_path = folder
+            full_path = os.path.join(folder_path, file)
+            os.makedirs(os.path.dirname(full_path), exist_ok=True)
+            content_key = file if folder == "dr_legis_backend/" else os.path.join(folder.replace("dr_legis_backend/", ""), file)
+            content = file_contents.get(content_key, "")
+            zipf.writestr(full_path, content)
+
+print(f"Arquivo ZIP '{zip_filename}' gerado com sucesso!")
