@@ -23,6 +23,7 @@ from emergentintegrations.payments.stripe.checkout import (
     CheckoutSessionResponse,
     CheckoutStatusResponse
 )
+from oab_knowledge_base import get_oab_context
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -183,6 +184,13 @@ DOMAINS = [
         "legislation": "Tratados Internacionais, Convenções",
         "court": "STJ, TRF, Cortes Internacionais",
         "accuracy": 87
+    },
+    {
+        "id": "etica_advocacia_oab",
+        "name": "Ética e Advocacia OAB",
+        "legislation": "Estatuto OAB (Lei 8.906/94), Código Ética (Res. 02/2015), Prov. 205/2021",
+        "court": "Tribunais de Ética e Disciplina OAB, Conselhos Seccionais",
+        "accuracy": 97
     }
 ]
 
@@ -388,8 +396,15 @@ async def create_consultation(
         )
     
     try:
+        # Get OAB context if applicable
+        oab_context = get_oab_context(consultation_req.domain)
+        
         # Build prompt for legal analysis
-        system_prompt = f"""Você é o Doutor Legis, um assistente jurídico especializado em Direito Brasileiro.
+        system_prompt = f"""{oab_context}
+
+---
+
+Você é o Doutor Legis, um assistente jurídico especializado em Direito Brasileiro.
 
 Domínio: {domain_info['name']}
 Legislação: {domain_info['legislation']}
@@ -409,11 +424,15 @@ Forneça uma análise jurídica completa e estruturada seguindo EXATAMENTE este 
 }}
 
 IMPORTANTE:
-- Use linguagem técnica mas acessível
-- Cite legislação específica quando possível
+- Use linguagem profissional, técnica e juridicamente precisa
+- Seja clara, acessível e didática
+- Cite legislação específica quando possível (com artigos)
 - O campo 'confianca' deve ser um número entre 70 e 95
 - Responda APENAS com o JSON, sem texto adicional
-- Mantenha respostas concisas mas completas"""
+- Mantenha respostas concisas mas completas
+- Adote tom elegante, imparcial, ético e institucional
+- Preserve coerência terminológica com os documentos normativos
+"""
 
         # Initialize LLM
         api_key = os.getenv("OPENAI_API_KEY") or os.getenv("EMERGENT_LLM_KEY")
@@ -699,7 +718,8 @@ async def health_check():
     return {
         "status": "healthy",
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "version": "2.0.0"
+        "version": "2.0.0",
+        "oab_integration": "active"
     }
 
 # Include the router in the main app
