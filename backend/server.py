@@ -590,6 +590,64 @@ async def get_history(
     ]
 
 # =============================================================================
+# PLANOS ROUTES
+# =============================================================================
+
+@api_router.get("/planos/todos")
+async def listar_todos_planos():
+    """Lista todos os planos disponíveis"""
+    return {
+        "planos": get_todos_planos(),
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+
+@api_router.get("/planos/meu-plano")
+async def meu_plano_atual(current_user: User = Depends(get_current_user)):
+    """Informações do plano atual do usuário"""
+    plano_config = get_plano_config(current_user.plan)
+    
+    if not plano_config:
+        raise HTTPException(status_code=404, detail="Configuração de plano não encontrada")
+    
+    # Verificar limites
+    limite_consultas = verificar_limite_consultas(current_user.plan, current_user.consultas_mes_atual)
+    limite_pdfs = verificar_limite_pdfs(current_user.plan, current_user.pdfs_mes_atual)
+    
+    return {
+        "usuario": {
+            "id": current_user.id,
+            "nome": current_user.name,
+            "email": current_user.email,
+            "plano": current_user.plan
+        },
+        "plano": plano_config.to_dict(),
+        "uso": {
+            "consultas": limite_consultas,
+            "pdfs": limite_pdfs
+        },
+        "trial": {
+            "ativo": current_user.em_trial,
+            "termina_em": current_user.data_trial_fim.isoformat() if current_user.data_trial_fim else None
+        } if current_user.em_trial else None,
+        "proxima_renovacao": current_user.data_renovacao.isoformat() if current_user.data_renovacao else None
+    }
+
+@api_router.get("/planos/verificar-limite")
+async def verificar_limite(
+    tipo: str,  # "consulta" ou "pdf"
+    current_user: User = Depends(get_current_user)
+):
+    """Verifica se usuário pode usar um recurso"""
+    if tipo == "consulta":
+        limite = verificar_limite_consultas(current_user.plan, current_user.consultas_mes_atual)
+    elif tipo == "pdf":
+        limite = verificar_limite_pdfs(current_user.plan, current_user.pdfs_mes_atual)
+    else:
+        raise HTTPException(status_code=400, detail="Tipo inválido. Use 'consulta' ou 'pdf'")
+    
+    return limite
+
+# =============================================================================
 # PAYMENT ROUTES
 # =============================================================================
 
