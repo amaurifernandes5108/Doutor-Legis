@@ -24,6 +24,15 @@ from emergentintegrations.payments.stripe.checkout import (
     CheckoutStatusResponse
 )
 from oab_knowledge_base import get_oab_context
+from planos_config import (
+    get_plano_config,
+    get_todos_planos,
+    verificar_limite_consultas,
+    verificar_limite_pdfs,
+    verificar_acesso_dominio,
+    get_dominios_disponiveis,
+    PLANOS
+)
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
