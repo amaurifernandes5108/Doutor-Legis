@@ -218,6 +218,19 @@
   font-weight: 600;
 }
 
+.pricing-card .premium-badge {
+  background: linear-gradient(135deg, var(--gold) 0%, #FFD700 100%);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+}
+
+.price-annual {
+  font-size: 0.9rem;
+  color: var(--gray-text);
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
 .pricing-card h3 {
   font-size: 2rem;
   margin-bottom: 1rem;
