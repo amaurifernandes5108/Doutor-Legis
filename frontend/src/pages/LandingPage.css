@@ -186,7 +186,23 @@
 
 .pricing-card.featured {
   border-color: var(--gold);
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+  transform: scale(1.05);
+}
+
+.pricing-card.premium {
+  border: 2px solid var(--gold);
+  background: linear-gradient(135deg, #001F3F 0%, #002a52 100%);
+  color: var(--white);
+}
+
+.pricing-card.premium .price {
+  color: var(--gold);
+}
+
+.pricing-card.premium li {
+  color: rgba(255, 255, 255, 0.9);
+  border-bottom-color: rgba(212, 175, 55, 0.2);
 }
 
 .pricing-card .badge {
