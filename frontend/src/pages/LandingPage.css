@@ -161,11 +161,11 @@
   color: var(--navy);
 }
 
-.pricing-grid {
+.pricing-grid-4 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  max-width: 900px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 2rem;
 }
