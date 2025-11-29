@@ -651,12 +651,131 @@ async def verificar_limite(
 # PAYMENT ROUTES
 # =============================================================================
 
+class CheckoutRequestNew(BaseModel):
+    plano: str  # "basico", "intermediario", "avancado"
+    tipo_pagamento: str  # "mensal" ou "anual"
+    origin_url: str
+
+@api_router.post("/planos/upgrade")
+async def upgrade_plano(
+    request: CheckoutRequestNew,
+    current_user: User = Depends(get_current_user)
+):
+    """Criar checkout para upgrade de plano"""
+    # Validar plano
+    if request.plano not in ["basico", "intermediario", "avancado"]:
+        raise HTTPException(status_code=400, detail="Plano inválido")
+    
+    # Validar tipo de pagamento
+    if request.tipo_pagamento not in ["mensal", "anual"]:
+        raise HTTPException(status_code=400, detail="Tipo de pagamento inválido. Use 'mensal' ou 'anual'")
+    
+    plano_config = get_plano_config(request.plano)
+    if not plano_config:
+        raise HTTPException(status_code=404, detail="Configuração de plano não encontrada")
+    
+    # Verificar se não está fazendo downgrade (não permitido via checkout)
+    planos_ordem = ["gratuito", "basico", "intermediario", "avancado"]
+    if planos_ordem.index(request.plano) <= planos_ordem.index(current_user.plan):
+        raise HTTPException(status_code=400, detail="Use a rota /planos/downgrade para reduzir seu plano")
+    
+    try:
+        # Determinar preço
+        valor = plano_config.preco_anual if request.tipo_pagamento == "anual" else plano_config.preco_mensal
+        
+        # Construir URLs
+        origin = request.origin_url.rstrip('/')
+        success_url = f"{origin}/payment-success?session_id={{{{CHECKOUT_SESSION_ID}}}}&plano={request.plano}"
+        cancel_url = f"{origin}/dashboard"
+        
+        # Inicializar Stripe
+        api_key = os.getenv("STRIPE_API_KEY")
+        webhook_url = f"{origin}/api/webhook/stripe"
+        stripe_checkout = StripeCheckout(api_key=api_key, webhook_url=webhook_url)
+        
+        # Criar checkout session
+        session_request = CheckoutSessionRequest(
+            amount=valor,
+            currency="brl",
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata={
+                "user_id": current_user.id,
+                "plano": request.plano,
+                "tipo_pagamento": request.tipo_pagamento,
+                "email": current_user.email
+            }
+        )
+        
+        session: CheckoutSessionResponse = await stripe_checkout.create_checkout_session(session_request)
+        
+        # Criar payment transaction
+        transaction_id = str(uuid.uuid4())
+        transaction = PaymentTransaction(
+            id=transaction_id,
+            session_id=session.session_id,
+            user_id=current_user.id,
+            amount=valor,
+            currency="brl",
+            status="initiated",
+            payment_status="unpaid",
+            metadata=session_request.metadata
+        )
+        
+        transaction_dict = transaction.model_dump()
+        transaction_dict['created_at'] = transaction_dict['created_at'].isoformat()
+        await db.payment_transactions.insert_one(transaction_dict)
+        
+        return {
+            "checkout_url": session.url,
+            "session_id": session.session_id,
+            "plano": request.plano,
+            "valor": valor,
+            "tipo": request.tipo_pagamento
+        }
+    
+    except Exception as e:
+        logger.error(f"Checkout error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erro ao criar checkout: {str(e)}")
+
+@api_router.post("/planos/downgrade")
+async def downgrade_plano(current_user: User = Depends(get_current_user)):
+    """Fazer downgrade para plano gratuito"""
+    if current_user.plan == "gratuito":
+        raise HTTPException(status_code=400, detail="Você já está no plano gratuito")
+    
+    try:
+        # Atualizar usuário para gratuito
+        await db.users.update_one(
+            {"id": current_user.id},
+            {
+                "$set": {
+                    "plan": "gratuito",
+                    "consultas_mes_atual": 0,
+                    "pdfs_mes_atual": 0,
+                    "em_trial": False,
+                    "data_trial_fim": None,
+                    "stripe_subscription_id": None
+                }
+            }
+        )
+        
+        return {
+            "message": "Downgrade realizado com sucesso",
+            "plano_atual": "gratuito",
+            "nova_renovacao": None
+        }
+    
+    except Exception as e:
+        logger.error(f"Downgrade error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erro ao fazer downgrade: {str(e)}")
+
 @api_router.post("/payments/checkout")
 async def create_checkout(
     checkout_req: CheckoutRequest,
     current_user: User = Depends(get_current_user)
 ):
-    """Create Stripe checkout session"""
+    """Create Stripe checkout session (legacy - usar /planos/upgrade)"""
     # Validate package
     if checkout_req.package_id not in PAYMENT_PACKAGES:
         raise HTTPException(status_code=400, detail="Pacote inválido")
