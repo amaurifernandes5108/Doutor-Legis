@@ -108,33 +108,74 @@ function LandingPage() {
       <section className="pricing">
         <div className="container">
           <h2 data-testid="pricing-title">Planos</h2>
-          <div className="pricing-grid">
+          <div className="pricing-grid-4">
             <div className="pricing-card">
               <h3>Gratuito</h3>
               <div className="price">R$ 0<span>/mês</span></div>
               <ul>
                 <li>✓ 3 consultas por mês</li>
-                <li>✓ Acesso a todos domínios</li>
-                <li>✓ Análise completa em 8 seções</li>
-                <li>✓ Histórico de consultas</li>
+                <li>✓ 1 domínio (Ética OAB)</li>
+                <li>✓ Análise em 8 seções</li>
+                <li>✓ Base conhecimento OAB</li>
               </ul>
               <button className="btn btn-secondary" onClick={handleLogin} data-testid="free-plan-btn">
                 Começar Grátis
               </button>
             </div>
+
+            <div className="pricing-card">
+              <h3>Básico</h3>
+              <div className="price">R$ 197<span>/mês</span></div>
+              <p className="price-annual">R$ 1.773/ano (25% OFF)</p>
+              <ul>
+                <li>✓ 30 consultas/mês</li>
+                <li>✓ 5 PDFs/mês</li>
+                <li>✓ 3 domínios jurídicos</li>
+                <li>✓ PDF simples</li>
+                <li>✓ Suporte email (72h)</li>
+                <li>✓ Trial 14 dias</li>
+              </ul>
+              <button className="btn btn-secondary" onClick={handleLogin} data-testid="basic-plan-btn">
+                Assinar Básico
+              </button>
+            </div>
+
             <div className="pricing-card featured">
               <div className="badge">Recomendado</div>
-              <h3>Premium</h3>
+              <h3>Intermediário</h3>
               <div className="price">R$ 497<span>/mês</span></div>
+              <p className="price-annual">R$ 4.476/ano (25% OFF)</p>
               <ul>
-                <li>✓ Consultas ilimitadas</li>
-                <li>✓ Acesso a todos domínios</li>
-                <li>✓ Análise completa em 8 seções</li>
-                <li>✓ Histórico completo</li>
-                <li>✓ Prioridade no processamento</li>
+                <li>✓ 150 consultas/mês</li>
+                <li>✓ 25 PDFs/mês</li>
+                <li>✓ 9 domínios (TODOS)</li>
+                <li>✓ PDF profissional + Word</li>
+                <li>✓ Dashboard avançado</li>
+                <li>✓ Suporte email (24h)</li>
+                <li>✓ Trial 14 dias</li>
               </ul>
-              <button className="btn btn-primary" onClick={handleLogin} data-testid="premium-plan-btn">
-                Assinar Premium
+              <button className="btn btn-primary" onClick={handleLogin} data-testid="intermediate-plan-btn">
+                Assinar Intermediário
+              </button>
+            </div>
+
+            <div className="pricing-card premium">
+              <div className="badge premium-badge">Ilimitado</div>
+              <h3>Avançado</h3>
+              <div className="price">R$ 997<span>/mês</span></div>
+              <p className="price-annual">R$ 8.976/ano (30% OFF)</p>
+              <ul>
+                <li>✓ Consultas ILIMITADAS</li>
+                <li>✓ PDFs ILIMITADOS</li>
+                <li>✓ 9 domínios (TODOS)</li>
+                <li>✓ Histórico permanente</li>
+                <li>✓ Suporte total (chat + email + tel)</li>
+                <li>✓ Account Manager</li>
+                <li>✓ API access</li>
+                <li>✓ SLA 99.9%</li>
+              </ul>
+              <button className="btn btn-primary" onClick={handleLogin} data-testid="advanced-plan-btn">
+                Contratar Avançado
               </button>
             </div>
           </div>
