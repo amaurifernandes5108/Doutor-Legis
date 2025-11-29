@@ -529,7 +529,15 @@ IMPORTANTE:
         consultation_dict['created_at'] = consultation_dict['created_at'].isoformat()
         await db.consultations.insert_one(consultation_dict)
         
-        # Deduct token only for free users
+        # Incrementar contador de consultas (exceto plano avançado que é ilimitado)
+        plano_config = get_plano_config(current_user.plan)
+        if plano_config.consultas_mes is not None:  # Não é ilimitado
+            await db.users.update_one(
+                {"id": current_user.id},
+                {"$inc": {"consultas_mes_atual": 1}}
+            )
+        
+        # Legacy: também decrementar token_balance para compatibilidade
         if current_user.plan == "gratuito":
             await db.users.update_one(
                 {"id": current_user.id},
