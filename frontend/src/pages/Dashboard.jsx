@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "sonner";
+import Footer from "@/components/Footer";
 import "./Dashboard.css";
 import { Search, Send, LogOut, Crown, Loader2, Menu, X } from "lucide-react";
 
@@ -402,6 +403,10 @@ function Dashboard({ user, setUser }) {
                   <p>Receba análise completa em 8 seções</p>
                 </div>
               </div>
+            </div>
+
+            <div className="panel-section" style={{marginTop: 'auto'}}>
+              <Footer />
             </div>
           </>
         ) : (

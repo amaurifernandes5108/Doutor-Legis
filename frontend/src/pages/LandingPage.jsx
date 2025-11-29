@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import Footer from "@/components/Footer";
 import "./LandingPage.css";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -143,13 +144,14 @@ function LandingPage() {
       {/* Footer */}
       <footer className="landing-footer">
         <div className="container">
-          <p>© 2025 Doutor Legis 2.0 — Assistente Jurídico com IA</p>
           <p className="disclaimer">
             Este serviço não constitui consultoria jurídica vinculativa.<br/>
             Recomenda-se sempre consultar um advogado para análises específicas.
           </p>
         </div>
       </footer>
+      
+      <Footer />
     </div>
   );
 }

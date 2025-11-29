@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { CheckCircle, Loader2, Crown } from "lucide-react";
+import Footer from "@/components/Footer";
 import "./PaymentSuccess.css";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -121,6 +122,7 @@ function PaymentSuccess({ user }) {
           </>
         )}
       </div>
+      <Footer />
     </div>
   );
 }
