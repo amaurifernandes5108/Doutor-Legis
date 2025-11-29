@@ -70,8 +70,27 @@ class User(BaseModel):
     email: EmailStr
     name: str
     picture: Optional[str] = None
-    plan: str = "gratuito"  # gratuito or premium
+    plan: str = "gratuito"  # gratuito, basico, intermediario, avancado
+    
+    # Stripe
+    stripe_customer_id: Optional[str] = None
+    stripe_subscription_id: Optional[str] = None
+    
+    # Uso mensal (reseta todo mês)
+    consultas_mes_atual: int = 0
+    pdfs_mes_atual: int = 0
+    
+    # Datas
+    data_plano_inicio: Optional[datetime] = None
+    data_renovacao: Optional[datetime] = None
+    
+    # Trial
+    em_trial: bool = False
+    data_trial_fim: Optional[datetime] = None
+    
+    # Legacy (manter para compatibilidade)
     token_balance: int = 3
+    
     google_id: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     active: bool = True
