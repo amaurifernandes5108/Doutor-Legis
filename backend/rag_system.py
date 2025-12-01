@@ -260,21 +260,17 @@ Nenhum documento específico foi encontrado no banco de dados vetorial para este
         user_message = UserMessage(text=question)
         response_text = await chat.send_message(user_message)
         
-        import json
-        try:
-            response_json = json.loads(response_text)
-            response_json["rag_enabled"] = False
-            response_json["warning"] = "Resposta gerada sem documentos específicos do banco de dados"
-        except:
-            response_json = {
-                "resumo": response_text[:200],
-                "analise_legal": response_text,
-                "rag_enabled": False,
-                "warning": "Resposta gerada sem documentos específicos"
-            }
+        # Resposta em Markdown sem RAG
+        response_data = {
+            "analise_completa": response_text,
+            "rag_enabled": False,
+            "warning": "⚠️ Resposta gerada sem documentos específicos do banco RAG",
+            "confianca": 75,  # Confiança reduzida sem RAG
+            "formato": "multi_ai_markdown"
+        }
         
         return {
-            "response": response_json,
+            "response": response_data,
             "context": None,
             "relevant_documents": [],
             "document_count": 0,
