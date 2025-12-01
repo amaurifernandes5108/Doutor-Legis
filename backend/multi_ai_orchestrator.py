@@ -301,10 +301,6 @@ Responda APENAS com o JSON, sem texto adicional."""
             # Tentar modelos em ordem de preferência
             models_to_try = ['gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-pro']
             
-            for model_name in models_to_try:
-                try:
-                    model = genai.GenerativeModel(model_name)
-            
             prompt = f"""Você é a IA Especializada em ANÁLISE JURISPRUDENCIAL.
 
 **CONTEXTO DO DOMÍNIO:** {domain}
