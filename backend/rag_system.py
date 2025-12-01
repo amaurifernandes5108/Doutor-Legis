@@ -159,6 +159,64 @@ Conteúdo: {text}
         
         return "\n".join(context_parts)
     
+    async def _generate_with_multi_ai(
+        self,
+        domain: str,
+        question: str,
+        context: str,
+        relevant_docs: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
+        """Gera resposta usando Multi-AI Orchestrator (5 IAs paralelas)
+        
+        Args:
+            domain: Domínio jurídico
+            question: Pergunta do usuário
+            context: Contexto construído dos documentos
+            relevant_docs: Documentos relevantes
+            
+        Returns:
+            Resposta consolidada das 5 IAs
+        """
+        from oab_knowledge_base import get_oab_context
+        from nucleos_especializados import get_prompt_nucleo
+        
+        # Obter contextos
+        oab_context = get_oab_context(domain)
+        nucleo_prompt = get_prompt_nucleo(domain)
+        
+        # Executar análise paralela
+        result = await self.orchestrator.analyze_parallel(
+            question=question,
+            domain=domain,
+            context=context,
+            oab_context=oab_context,
+            nucleo_prompt=nucleo_prompt
+        )
+        
+        if result["status"] == "success":
+            consolidated = result["consolidated"]
+            
+            return {
+                "analise_completa": consolidated["analise_completa"],
+                "rag_enabled": True,
+                "multi_ai": True,
+                "ias_responded": result["ias_responded"],
+                "consenso": consolidated.get("consenso", 90),
+                "confianca": consolidated.get("consenso", 90),
+                "documents_used": len(relevant_docs),
+                "formato": "multi_ai_real_parallel",
+                "elapsed_time": result["elapsed_time"]
+            }
+        else:
+            # Fallback para single-LLM se Multi-AI falhar
+            logger.warning("Multi-AI falhou, usando fallback single-LLM")
+            return await self._generate_with_context(
+                domain=domain,
+                question=question,
+                context=context,
+                relevant_docs=relevant_docs
+            )
+    
     async def _generate_with_context(
         self,
         domain: str,
