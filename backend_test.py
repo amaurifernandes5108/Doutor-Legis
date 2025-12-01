@@ -354,25 +354,13 @@ class DoutorLegisAPITester:
 
     def test_router_inteligente(self):
         """Test Router Inteligente classification"""
-        # Router expects form data
-        import requests
-        url = f"{self.api_url}/domains/classificar"
+        # Router expects query parameter
+        import urllib.parse
+        pergunta = "Quais são as prerrogativas do advogado segundo a OAB?"
+        encoded_pergunta = urllib.parse.quote(pergunta)
+        endpoint = f'/domains/classificar?pergunta={encoded_pergunta}'
         
-        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-        if self.session_token:
-            headers['Authorization'] = f'Bearer {self.session_token}'
-        
-        data = {"pergunta": "Quais são as prerrogativas do advogado segundo a OAB?"}
-        
-        try:
-            response = requests.post(url, data=data, headers=headers, timeout=30)
-            response_data = response.json() if response.headers.get('content-type', '').startswith('application/json') else response.text
-            success = True
-            status = response.status_code
-        except Exception as e:
-            success = False
-            response_data = str(e)
-            status = 0
+        success, response_data, status = self.make_request('POST', endpoint)
         
         if success and status == 200 and isinstance(response, dict):
             required_fields = ['dominio_sugerido', 'confianca', 'detalhes', 'sugestoes_alternativas']
