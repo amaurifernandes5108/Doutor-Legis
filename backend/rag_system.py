@@ -60,6 +60,7 @@ class RAGSystem:
                 query_vector=question_embedding,
                 top_k=top_k,
                 filter_metadata=filter_metadata,
+                sub_namespace="legislation",  # Buscar em legislation primeiro
                 include_metadata=True
             )
             
