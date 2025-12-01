@@ -75,6 +75,9 @@ class User(BaseModel):
     picture: Optional[str] = None
     plan: str = "gratuito"  # gratuito, basico, intermediario, avancado
     
+    # Role de usuário
+    role: str = "user"  # user, admin_master
+    
     # Stripe
     stripe_customer_id: Optional[str] = None
     stripe_subscription_id: Optional[str] = None
