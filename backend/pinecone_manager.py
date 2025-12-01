@@ -218,24 +218,27 @@ Namespaces disponíveis:
         query_vector: List[float],
         top_k: int = 10,
         filter_metadata: Dict[str, Any] = None,
-        namespace: str = "",
+        sub_namespace: str = "",
         include_metadata: bool = True
     ) -> List[Dict[str, Any]]:
-        """Busca vetores similares
+        """Busca vetores similares no namespace do domínio
         
         Args:
-            domain: Nome do domínio jurídico
+            domain: Nome do domínio jurídico (namespace)
             query_vector: Vetor de consulta (embedding)
             top_k: Número de resultados
             filter_metadata: Filtros de metadata
-            namespace: Namespace para buscar
+            sub_namespace: Sub-namespace opcional
             include_metadata: Incluir metadata nos resultados
             
         Returns:
             Lista de matches com scores e metadata
         """
         try:
-            index = self.get_index(domain)
+            index = self.get_index()
+            
+            # Namespace = domínio (ou domínio/sub_namespace)
+            namespace = f"{domain}/{sub_namespace}" if sub_namespace else domain
             
             results = index.query(
                 vector=query_vector,
@@ -255,13 +258,13 @@ Namespaces disponíveis:
                 })
             
             logger.info(
-                f"Busca em {domain}: {len(matches)} resultados (top_k={top_k})"
+                f"Busca em namespace '{namespace}': {len(matches)} resultados (top_k={top_k})"
             )
             
             return matches
             
         except Exception as e:
-            logger.error(f"Erro na busca em {domain}: {str(e)}")
+            logger.error(f"Erro na busca em namespace {domain}: {str(e)}")
             return []
     
     def delete_vectors(
