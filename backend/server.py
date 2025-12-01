@@ -1228,6 +1228,55 @@ async def get_performance_analytics(current_user: User = Depends(get_current_use
     
     return meta_nucleo.get_dashboard_data()
 
+@api_router.get("/analytics/pinecone-stats")
+async def get_pinecone_stats(current_user: User = Depends(get_current_user)):
+    """Retorna estatísticas do banco vetorial Pinecone"""
+    # Apenas para admin master
+    if not is_admin_master(current_user):
+        raise HTTPException(
+            status_code=403,
+            detail="Acesso restrito a Administradores Master"
+        )
+    
+    if not rag_system:
+        return {
+            "status": "disabled",
+            "message": "Sistema RAG não configurado"
+        }
+    
+    try:
+        # Stats gerais do índice
+        general_stats = rag_system.pinecone.get_index_stats()
+        
+        # Stats por namespace/domínio
+        namespaces = general_stats.get('namespaces', {})
+        domain_stats = []
+        
+        from pinecone_manager import LEGAL_DOMAINS
+        for domain in LEGAL_DOMAINS:
+            ns_key = f"{domain}/legislation"
+            if ns_key in namespaces:
+                domain_stats.append({
+                    "domain": domain,
+                    "vector_count": namespaces[ns_key].get('vector_count', 0)
+                })
+        
+        return {
+            "status": "active",
+            "index_name": "legal-ultra",
+            "total_vectors": general_stats.get('total_vector_count', 0),
+            "dimension": general_stats.get('dimension', 1536),
+            "namespaces_populated": len(namespaces),
+            "domain_stats": domain_stats,
+            "rag_enabled": True
+        }
+    except Exception as e:
+        logger.error(f"Erro ao obter stats Pinecone: {str(e)}")
+        return {
+            "status": "error",
+            "message": str(e)
+        }
+
 @api_router.get("/analytics/router-stats")
 async def get_router_stats():
     """Estatísticas do Router Inteligente"""
