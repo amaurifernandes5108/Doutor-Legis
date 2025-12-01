@@ -153,8 +153,8 @@ function Dashboard({ user, setUser }) {
         }
       ]);
 
-      // Update user token balance
-      if (user.plan === "gratuito") {
+      // Update user token balance (exceto admin master)
+      if (user.plan === "gratuito" && !adminStatus?.is_admin_master) {
         setUser(prev => ({ ...prev, token_balance: prev.token_balance - 1 }));
       }
 
