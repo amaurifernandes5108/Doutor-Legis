@@ -72,14 +72,22 @@ class DoutorLegisAPITester:
             return False, str(e), 0
 
     def test_health_check(self):
-        """Test health endpoint"""
+        """Test health endpoint - ULTRA version"""
         success, response, status = self.make_request('GET', '/health')
         
-        if success and status == 200:
-            self.log_test("Health Check", True, response_data=response)
-            return True
+        if success and status == 200 and isinstance(response, dict):
+            # Check ULTRA specific fields
+            required_fields = ["status", "version", "nucleos_ativos", "router_inteligente", "meta_nucleo"]
+            missing_fields = [f for f in required_fields if f not in response]
+            
+            if not missing_fields and response.get("nucleos_ativos") == 13:
+                self.log_test("Health Check ULTRA", True, f"All ULTRA components active", response)
+                return True
+            else:
+                self.log_test("Health Check ULTRA", False, f"Missing fields: {missing_fields} or nucleos_ativos != 13")
+                return False
         else:
-            self.log_test("Health Check", False, f"Status: {status}, Response: {response}")
+            self.log_test("Health Check ULTRA", False, f"Status: {status}, Response: {response}")
             return False
 
     def test_domains_endpoint(self):
