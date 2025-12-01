@@ -99,7 +99,8 @@ function Dashboard({ user, setUser }) {
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || !selectedDomain) return;
     
-    if (user.token_balance < 1 && user.plan === "gratuito") {
+    // Admin Master bypassa verificação de saldo
+    if (!adminStatus?.is_admin_master && user.token_balance < 1 && user.plan === "gratuito") {
       toast.error("Saldo insuficiente! Assine o plano Premium.");
       return;
     }
