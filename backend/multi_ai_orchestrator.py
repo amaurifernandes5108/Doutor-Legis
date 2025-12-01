@@ -339,6 +339,10 @@ Analise a pergunta EXCLUSIVAMENTE sob a perspectiva JURISPRUDENCIAL:
 
 Responda APENAS com o JSON, sem texto adicional."""
 
+            for model_name in models_to_try:
+                try:
+                    model = genai.GenerativeModel(model_name)
+                    
                     response = await asyncio.to_thread(
                         model.generate_content,
                         prompt
