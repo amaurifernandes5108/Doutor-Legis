@@ -208,7 +208,7 @@ Responda APENAS com o JSON, sem texto adicional."""
             )
             
             content = response.content[0].text
-            result = json.loads(content)
+            result = self._extract_json_from_text(content)
             result["ia"] = "constitucional"
             result["model"] = "claude-sonnet-4"
             
