@@ -43,37 +43,34 @@ class PineconeManager:
         
     def create_index(
         self,
-        domain: str,
         dimension: int = 1536,  # OpenAI text-embedding-3-small
         metric: str = "cosine",
         cloud: str = "aws",
         region: str = "us-east-1"
     ):
-        """Cria um índice Pinecone para um domínio jurídico
+        """Cria o índice único Pinecone para todos os domínios
         
         Args:
-            domain: Nome do domínio jurídico
             dimension: Dimensão dos vetores (1536 para OpenAI embedding-3-small)
             metric: Métrica de similaridade (cosine, euclidean, dotproduct)
             cloud: Provedor cloud (aws, gcp, azure)
             region: Região do servidor
         """
-        index_name = f"{self.index_prefix}{domain}"
-        
         try:
             # Verificar se índice já existe
             existing_indexes = self.pc.list_indexes()
-            index_exists = any(idx['name'] == index_name for idx in existing_indexes)
+            index_exists = any(idx['name'] == self.index_name for idx in existing_indexes)
             
             if index_exists:
-                logger.info(f"Índice {index_name} já existe")
-                return index_name
+                logger.info(f"Índice {self.index_name} já existe")
+                self.index = self.pc.Index(self.index_name)
+                return self.index_name
             
-            logger.info(f"Criando índice: {index_name}")
+            logger.info(f"Criando índice único: {self.index_name}")
             
             # Criar índice serverless
             self.pc.create_index(
-                name=index_name,
+                name=self.index_name,
                 dimension=dimension,
                 metric=metric,
                 spec=ServerlessSpec(
@@ -82,11 +79,14 @@ class PineconeManager:
                 )
             )
             
-            logger.info(f"✅ Índice {index_name} criado com sucesso")
-            return index_name
+            logger.info(f"✅ Índice {self.index_name} criado com sucesso")
+            logger.info(f"📦 13 namespaces serão usados para separar domínios")
+            
+            self.index = self.pc.Index(self.index_name)
+            return self.index_name
             
         except Exception as e:
-            logger.error(f"❌ Erro ao criar índice {index_name}: {str(e)}")
+            logger.error(f"❌ Erro ao criar índice {self.index_name}: {str(e)}")
             raise
     
     def create_all_indexes(self):
