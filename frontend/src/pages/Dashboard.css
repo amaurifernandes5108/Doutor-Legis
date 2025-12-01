@@ -671,3 +671,37 @@
   border-radius: 8px;
   border: 1px solid rgba(212, 175, 55, 0.3);
 }
+
+.admin-banner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(255, 215, 0, 0.1) 100%);
+  border: 2px solid #D4AF37;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.admin-banner-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin-banner-content strong {
+  color: #001F3F;
+  font-size: 1rem;
+}
+
+.admin-banner-content span {
+  color: #666;
+  font-size: 0.85rem;
+}
