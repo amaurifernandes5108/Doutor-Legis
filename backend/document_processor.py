@@ -223,15 +223,14 @@ class BrazilianLegalChunker:
 
 
 class EmbeddingGenerator:
-    """Gerador de embeddings usando OpenAI"""
+    """Gerador de embeddings usando Emergent Integrations"""
     
     def __init__(self, openai_api_key: str):
         """Inicializa gerador de embeddings
         
         Args:
-            openai_api_key: OpenAI API Key
+            openai_api_key: OpenAI API Key (Emergent LLM Key)
         """
-        from emergentintegrations.llm.chat import LlmChat
         self.api_key = openai_api_key
         self.model = "text-embedding-3-small"
         self.dimension = 1536
@@ -245,10 +244,7 @@ class EmbeddingGenerator:
         Returns:
             Vetor de embedding (1536 dimensões)
         """
-        import asyncio
-        from openai import AsyncOpenAI
-        
-        client = AsyncOpenAI(api_key=self.api_key)
+        from emergentintegrations.llm.embeddings import LlmEmbeddings
         
         # Limpar texto
         text = text.replace("\n", " ").strip()
@@ -257,13 +253,12 @@ class EmbeddingGenerator:
             raise ValueError("Texto vazio")
         
         try:
-            response = await client.embeddings.create(
-                input=[text],
-                model=self.model
-            )
+            embeddings_client = LlmEmbeddings(api_key=self.api_key)
+            embeddings_client.with_model("openai", self.model)
             
-            embedding = response.data[0].embedding
-            return embedding
+            embedding = await embeddings_client.embed_texts([text])
+            
+            return embedding[0]
             
         except Exception as e:
             logger.error(f"Erro ao gerar embedding: {str(e)}")
@@ -284,9 +279,7 @@ class EmbeddingGenerator:
             Lista de embeddings
         """
         import asyncio
-        from openai import AsyncOpenAI
-        
-        client = AsyncOpenAI(api_key=self.api_key)
+        from emergentintegrations.llm.embeddings import LlmEmbeddings
         
         all_embeddings = []
         
@@ -297,12 +290,10 @@ class EmbeddingGenerator:
             batch = [text.replace("\n", " ").strip() for text in batch]
             
             try:
-                response = await client.embeddings.create(
-                    input=batch,
-                    model=self.model
-                )
+                embeddings_client = LlmEmbeddings(api_key=self.api_key)
+                embeddings_client.with_model("openai", self.model)
                 
-                batch_embeddings = [item.embedding for item in response.data]
+                batch_embeddings = await embeddings_client.embed_texts(batch)
                 all_embeddings.extend(batch_embeddings)
                 
                 logger.info(f"Batch {i//batch_size + 1}: {len(batch_embeddings)} embeddings gerados")
