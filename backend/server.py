@@ -292,6 +292,14 @@ PAYMENT_PACKAGES = {
 # AUTHENTICATION HELPERS
 # =============================================================================
 
+def is_admin_master(user: User) -> bool:
+    """Verifica se usuário é Administrador Master Fundador"""
+    return user.role == "admin_master"
+
+def is_founder_email(email: str) -> bool:
+    """Verifica se é email do fundador"""
+    return email.lower() == "amaurifernandes1975@gmail.com"
+
 async def get_current_user(request: Request, authorization: Optional[str] = Header(None)) -> User:
     """Get current user from session token (cookie or header)"""
     session_token = None
