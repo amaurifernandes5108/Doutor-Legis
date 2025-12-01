@@ -455,6 +455,8 @@ async def get_current_user_profile(current_user: User = Depends(get_current_user
         "name": current_user.name,
         "picture": current_user.picture,
         "plan": current_user.plan,
+        "role": current_user.role,
+        "is_admin": is_admin_master(current_user),
         "token_balance": current_user.token_balance,
         "created_at": current_user.created_at.isoformat()
     }
