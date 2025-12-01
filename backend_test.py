@@ -191,9 +191,10 @@ class DoutorLegisAPITester:
             self.log_test("Consultation Creation", False, "No session token available")
             return False
         
+        # Use etica_advocacia_oab domain since gratuito plan only has access to this domain
         consultation_data = {
-            "domain": "civil",
-            "question": "Quais são os requisitos para um contrato de compra e venda de imóvel ser válido?"
+            "domain": "etica_advocacia_oab",
+            "question": "Quais são os requisitos para um advogado exercer a advocacia no Brasil?"
         }
         
         success, response, status = self.make_request('POST', '/consultation', consultation_data)
