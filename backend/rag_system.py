@@ -212,26 +212,41 @@ Forneça a resposta seguindo EXATAMENTE a estrutura Multi-Dimensional definida n
         domain: str,
         question: str
     ) -> Dict[str, Any]:
-        """Gera resposta sem contexto (fallback)
+        """Gera resposta sem contexto RAG usando sistema Multi-AI
         
         Args:
             domain: Domínio jurídico
             question: Pergunta do usuário
             
         Returns:
-            Resposta com indicação de falta de contexto
+            Resposta com indicação de falta de contexto RAG
         """
+        from multi_ai_prompt_system import get_multi_ai_prompt
         from nucleos_especializados import get_prompt_nucleo
+        from oab_knowledge_base import get_oab_context
         
+        # Obter contextos
         nucleo_prompt = get_prompt_nucleo(domain)
+        oab_context = get_oab_context(domain)
         
-        system_prompt = f"""{nucleo_prompt}
+        # Gerar prompt Multi-AI
+        multi_ai_system = get_multi_ai_prompt(domain, oab_context, nucleo_prompt)
+        
+        system_prompt = f"""{multi_ai_system}
 
-⚠️ AVISO: Nenhum documento específico foi encontrado no banco de dados vetorial.
-Responda baseado no conhecimento geral, mas indique que a resposta pode ser mais precisa
-com documentos específicos disponíveis.
+---
 
-Forneça análise jurídica no formato JSON padrão.
+⚠️ **AVISO IMPORTANTE - MODO SEM RAG:**
+
+Nenhum documento específico foi encontrado no banco de dados vetorial para este domínio.
+
+**INSTRUÇÕES:**
+1. Responda baseado no conhecimento jurídico geral consolidado
+2. Indique claramente áreas onde documentos específicos seriam benéficos
+3. Ajuste nível de confiança conforme falta de precedentes específicos
+4. Siga RIGOROSAMENTE a estrutura Multi-Dimensional
+
+**FORMATO DE RESPOSTA:** Markdown estruturado conforme sistema Multi-AI.
 """
         
         chat = LlmChat(
