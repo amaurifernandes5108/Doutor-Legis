@@ -187,8 +187,16 @@ PLANOS = {
 DOMINIOS_POR_PLANO = {
     "gratuito": ["etica_advocacia_oab"],
     "basico": ["etica_advocacia_oab", "civil", "consumidor"],
-    "intermediario": ["constitucional", "civil", "consumidor", "imobiliario", "publico", "trabalhista", "empresarial", "internacional", "etica_advocacia_oab"],
-    "avancado": ["constitucional", "civil", "consumidor", "imobiliario", "publico", "trabalhista", "empresarial", "internacional", "etica_advocacia_oab"]
+    "intermediario": [
+        "constitucional", "civil", "consumidor", "imobiliario", "publico", 
+        "trabalhista", "empresarial", "internacional", "etica_advocacia_oab",
+        "penal", "tributario", "previdenciario", "tecnologia"
+    ],
+    "avancado": [
+        "constitucional", "civil", "consumidor", "imobiliario", "publico", 
+        "trabalhista", "empresarial", "internacional", "etica_advocacia_oab",
+        "penal", "tributario", "previdenciario", "tecnologia"
+    ]
 }
 
 def get_plano_config(plano_id: str) -> Optional[PlanoConfig]:
