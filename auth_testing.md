@@ -29,11 +29,11 @@ print('User ID: ' + userId);
 ## Step 2: Test Backend API
 ```bash
 # Test auth endpoint
-curl -X GET "https://themisbot.preview.emergentagent.com/api/auth/me" \
+curl -X GET "https://legalai-18.preview.emergentagent.com/api/auth/me" \
   -H "Authorization: Bearer YOUR_SESSION_TOKEN"
 
 # Test protected endpoints
-curl -X GET "https://themisbot.preview.emergentagent.com/api/domains" \
+curl -X GET "https://legalai-18.preview.emergentagent.com/api/domains" \
   -H "Authorization: Bearer YOUR_SESSION_TOKEN"
 ```
 
@@ -49,7 +49,7 @@ await page.context.add_cookies([{
     "secure": true,
     "sameSite": "None"
 }]);
-await page.goto("https://themisbot.preview.emergentagent.com");
+await page.goto("https://legalai-18.preview.emergentagent.com");
 ```
 
 ## Critical Points

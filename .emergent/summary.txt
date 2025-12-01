@@ -1,0 +1,355 @@
+<analysis>**original_problem_statement:**
+O usuário deseja construir uma plataforma SaaS de IA jurídica chamada Doutor Legis 2.0.
+
+**PRODUCT REQUIREMENTS:**
+- **Stack:** Backend Python (FastAPI), Frontend React (Vite). O usuário concordou em usar MongoDB em vez do PostgreSQL solicitado inicialmente.
+- **Features Principais:**
+    - Autenticação com JWT e Google OAuth (usando Emergent Authentication).
+    - Integração com Stripe para planos de assinatura.
+    - Integração com OpenAI GPT-4 para análise jurídica.
+    - Layout responsivo de 3 colunas: sidebar, chat central, painel de informações.
+    - Paleta de cores: Ouro (#D4AF37), Azul Marinho (#001F3F), Branco, Cinza.
+- **Evoluções Solicitadas:**
+    1.  **Integração OAB:** Adicionar o Estatuto da Advocacia e o Código de Ética como uma base de conhecimento e criar um novo domínio jurídico (Ética e Advocacia OAB).
+    2.  **Sistema de Planos:** Implementar um sistema de 4 planos de assinatura (Gratuito, Básico, Intermediário, Avançado) com diferentes limites e preços.
+    3.  **Proteção de Propriedade Intelectual:** Adicionar um rodapé em todas as páginas com a declaração de autoria: © 2025 Doutor Legis 2.0 — Criado e Idealizado por Amauri Gonçalves Fernandes. Todos os direitos reservados..
+    4.  **Doutor Legis 2.0 ULTRA:** Evoluir a arquitetura para um sistema de 13 Núcleos Jurídicos Especializados, incluindo um Meta-Núcleo de aprendizado contínuo. Isso envolve expandir os domínios, criar um router inteligente e preparar a base para futuras integrações com Vector DBs (Pinecone) e modelos fine-tuned.
+
+**User's preferred language**: Portuguese (pt-BR). The next agent MUST respond in Portuguese.
+
+**what currently exists?**
+Uma aplicação full-stack funcional com backend FastAPI e frontend React. As principais funcionalidades implementadas são:
+-   Autenticação de usuário via JWT (com sistema de teste) e integração com Emergent Auth (Google).
+-   Integração com Stripe para checkout de planos.
+-   Landing page com a apresentação dos 4 planos de assinatura.
+-   Dashboard principal com layout de 3 colunas (ainda a ser totalmente populado).
+-   Backend com 13 domínios jurídicos definidos (os 8 originais + OAB + 4 novos do ULTRA).
+-   Endpoint de chat  que integra com OpenAI.
+-   Rodapé de proteção de propriedade intelectual em todas as páginas principais.
+-   Arquivos base para a arquitetura ULTRA (, , ) foram criados.
+
+**Last working item**:
+-   **Last item agent was working:** O agente estava no meio da integração da arquitetura Doutor Legis 2.0 ULTRA. Especificamente, estava editando o arquivo  para importar e utilizar os novos módulos , , e os prompts especializados dos , substituindo a lógica de chat anterior.
+-   **Status:** IN PROGRESS
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** backend testing agent. Testar o endpoint  para garantir que os 13 domínios são listados corretamente. Em seguida, testar o endpoint  com diferentes perguntas para verificar se o novo  está sendo acionado e se a resposta da IA é gerada corretamente.
+-   **User Testing Done:** N
+
+**All Pending/In progress Issue list**:
+-   **Issue 1:** A integração da arquitetura ULTRA está incompleta. O arquivo  foi editado várias vezes, mas a lógica pode não estar totalmente conectada ou funcional. (Priority: P0)
+-   **Issue 2:** O  emitiu um aviso () sobre a falta de projeções em consultas MongoDB, o que pode causar problemas de performance. (Priority: P1)
+
+**Issues Detail:**
+-   **Issue 1: Integração Incompleta da Arquitetura ULTRA**
+    -   **Attempted fixes:** O agente criou os arquivos , ,  e começou a editar o  para integrar esses módulos, principalmente na rota .
+    -   **Next debug checklist:**
+        1.  Revisar  para garantir que as importações dos novos módulos estão corretas.
+        2.  Verificar a lógica dentro da rota  para confirmar que  e  estão sendo chamados corretamente.
+        3.  Reiniciar o servidor de backend e verificar os logs (==> /var/log/supervisor/backend.err.log <==
+INFO:     Application startup complete.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [367]
+INFO:     Stopping reloader process [30]
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [504] using WatchFiles
+INFO:     Started server process [506]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [29] using WatchFiles
+INFO:     Started server process [76]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [76]
+INFO:     Started server process [595]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [595]
+INFO:     Started server process [615]
+INFO:     Waiting for application startup.
+2025-11-30 00:04:53,600 - server - INFO - MongoDB indexes created successfully
+INFO:     Application startup complete.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [615]
+INFO:     Stopping reloader process [29]
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [629] using WatchFiles
+INFO:     Started server process [631]
+INFO:     Waiting for application startup.
+2025-11-30 00:05:00,357 - server - INFO - MongoDB indexes created successfully
+INFO:     Application startup complete.
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [35] using WatchFiles
+INFO:     Started server process [67]
+INFO:     Waiting for application startup.
+2025-12-01 11:03:37,918 - server - INFO - MongoDB indexes created successfully
+INFO:     Application startup complete.
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [29] using WatchFiles
+INFO:     Started server process [81]
+INFO:     Waiting for application startup.
+2025-12-01 11:42:44,239 - server - INFO - MongoDB indexes created successfully
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [81]
+INFO:     Started server process [201]
+INFO:     Waiting for application startup.
+2025-12-01 11:49:57,638 - server - INFO - MongoDB indexes created successfully
+INFO:     Application startup complete.
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [29] using WatchFiles
+INFO:     Started server process [73]
+INFO:     Waiting for application startup.
+2025-12-01 12:30:01,067 - server - INFO - MongoDB indexes created successfully
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'meta_nucleo.py', 'nucleos_especializados.py', 'router_inteligente.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [73]
+INFO:     Started server process [179]
+INFO:     Waiting for application startup.
+2025-12-01 12:33:30,071 - server - INFO - MongoDB indexes created successfully
+INFO:     Application startup complete.
+2025-12-01 12:39:06,686 - server - ERROR - Session processing error: E11000 duplicate key error collection: doutor_legis_db.users index: email_1 dup key: { email: "amaurifernandes1975@gmail.com" }, full error: {'index': 0, 'code': 11000, 'errmsg': 'E11000 duplicate key error collection: doutor_legis_db.users index: email_1 dup key: { email: "amaurifernandes1975@gmail.com" }', 'keyPattern': {'email': 1}, 'keyValue': {'email': 'amaurifernandes1975@gmail.com'}}
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [179]
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Started server process [274]
+INFO:     Waiting for application startup.
+2025-12-01 12:41:10,297 - server - INFO - MongoDB indexes created successfully
+INFO:     Application startup complete.
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [29] using WatchFiles
+
+==> /var/log/supervisor/backend.out.log <==
+INFO:     10.64.130.71:54030 - "GET /api/ HTTP/1.1" 404 Not Found
+INFO:     10.64.129.122:35978 - "GET /api/ HTTP/1.1" 404 Not Found
+INFO:     10.64.132.136:35028 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.132.136:35028 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.131.137:44076 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     10.64.132.136:54062 - "GET /api/domains HTTP/1.1" 200 OK
+INFO:     10.64.129.122:53796 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.135.205:34740 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.132.151:36794 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     10.64.130.72:48026 - "GET /api/domains HTTP/1.1" 200 OK
+INFO:     10.64.132.151:36794 - "GET /api/auth/google-login HTTP/1.1" 200 OK
+INFO:     10.64.137.16:44126 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.64.132.151:36794 - "POST /api/consultation HTTP/1.1" 200 OK
+INFO:     10.64.132.151:36794 - "GET /api/consultation/94a59f82-5332-4620-ab5b-fce3e320d016 HTTP/1.1" 200 OK
+INFO:     10.64.137.17:44434 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     10.64.137.16:54908 - "POST /api/payments/checkout HTTP/1.1" 200 OK
+INFO:     10.64.132.136:42996 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.132.136:42996 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.129.122:58342 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.129.122:58342 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.135.205:47470 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.129.121:40128 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.135.205:55170 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.129.122:53794 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.135.205:55170 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.130.72:44474 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.64.132.151:33826 - "POST /api/consultation HTTP/1.1" 200 OK
+INFO:     10.64.131.137:51244 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.64.135.205:57098 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.129.122:60782 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.129.121:48208 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.129.121:48208 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.132.151:40064 - "GET /api/domains HTTP/1.1" 200 OK
+INFO:     10.64.130.72:55258 - "POST /api/consultation HTTP/1.1" 200 OK
+INFO:     10.64.130.71:59100 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.130.71:59100 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.130.72:46386 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.130.72:46386 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.132.136:36922 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.137.17:60264 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.132.151:52600 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.132.136:40018 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.137.16:49478 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     10.64.129.121:60890 - "GET /api/planos/todos HTTP/1.1" 200 OK
+INFO:     10.64.130.72:46772 - "GET /api/auth/google-login HTTP/1.1" 200 OK
+INFO:     10.64.129.121:37066 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.129.122:49542 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.135.205:51140 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.135.205:51140 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.129.121:43296 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     10.64.130.72:40230 - "GET /api/domains HTTP/1.1" 200 OK
+INFO:     10.64.137.16:41188 - "GET /api/planos/todos HTTP/1.1" 200 OK
+INFO:     10.64.135.205:35198 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.135.250:44768 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.143.136:58210 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.143.136:58210 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.134.203:45996 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.134.221:40050 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.134.206:48250 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.134.221:37838 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.131.137:47318 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.131.135:43326 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     10.64.143.135:51470 - "GET /api/auth/google-login HTTP/1.1" 200 OK
+INFO:     10.64.134.203:43096 - "POST /api/auth/session HTTP/1.1" 500 Internal Server Error
+INFO:     10.64.134.206:60358 - "POST /api/auth/session HTTP/1.1" 200 OK
+INFO:     10.64.134.221:59392 - "GET /api/domains HTTP/1.1" 200 OK
+INFO:     10.64.134.206:60358 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     10.64.134.221:59392 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.64.134.221:59392 - "GET /api/domains HTTP/1.1" 200 OK
+INFO:     10.64.134.203:43096 - "GET /api/history HTTP/1.1" 200 OK) em busca de erros de importação ou de inicialização.
+        4.  Executar um teste com  no endpoint  para validar o fluxo de ponta a ponta.
+    -   **Why fix this issue and what will be achieved with the fix?** Corrigir isso completará a Fase 1 da evolução para Doutor Legis 2.0 ULTRA, tornando o sistema mais inteligente e preciso na classificação de perguntas e geração de respostas.
+    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** backend
+    -   **Blocked on other issue:** None
+
+-   **Issue 2: Otimização de Consultas MongoDB**
+    -   **Attempted fixes:** Nenhum. O agente corrigiu outros bloqueadores (), mas este aviso () permaneceu.
+    -   **Next debug checklist:**
+        1.  Identificar as consultas ao MongoDB no código () que não usam projeções ().
+        2.  Adicionar projeções para retornar apenas os campos necessários. Ex: .
+    -   **Why fix this issue and what will be achieved with the fix?** Melhorar a performance e a escalabilidade da aplicação, reduzindo a quantidade de dados trafegados entre a aplicação e o banco de dados.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** backend
+    -   **Blocked on other issue:** None
+
+**In progress Task List**:
+-   **Task 1: Concluir a integração da arquitetura Doutor Legis 2.0 ULTRA**
+    -   **Where to resume:** Continuar a edição e depuração de  para finalizar a integração dos módulos ,  e .
+    -   **What will be achieved with this?** A aplicação passará a usar a nova arquitetura para processar consultas jurídicas, com um roteamento mais inteligente e respostas potencialmente mais precisas.
+    -   **Status:** IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?** backend
+    -   **Blocked on something:** None
+
+**Upcoming and Future Tasks**
+-   **Upcoming Tasks:**
+    -   **P0:** Testar exaustivamente a nova arquitetura ULTRA após a conclusão da integração.
+    -   **P1:** Atualizar a interface do frontend (Dashboard) para refletir a capacidade dos 13 domínios jurídicos.
+    -   **P1:** Implementar a lógica de  do Meta-Núcleo, que atualmente é apenas um placeholder (ex: salvar feedback, registrar erros de classificação).
+-   **Future Tasks:**
+    -   **P2:** Integrar com um Vector Database (Pinecone), conforme especificado no documento DOUTOR_LEGIS_ULTRA_13_NUCLEOS.md.
+    -   **P2:** Implementar o fine-tuning de modelos GPT-4 para cada núcleo jurídico.
+    -   **P2:** Desenvolver o sistema de monitoramento 24/7 para a saúde dos núcleos.
+
+**Completed work in this session**
+-   **Initial Setup:** Configuração do projeto FastAPI + React com MongoDB.
+-   **Authentication:** Implementação do sistema de autenticação com JWT e Google OAuth (via Emergent).
+-   **Monetization:** Integração com Stripe e criação de um sistema de 4 planos de assinatura.
+-   **Core Feature:** Implementação de 8 domínios jurídicos e um endpoint de chat com OpenAI.
+-   **Feature Expansion (OAB):** Adição do 9º domínio Ética e Advocacia OAB com sua base de conhecimento.
+-   **UI/UX:** Criação da Landing Page, Dashboard, e páginas de suporte. Adição do rodapé de propriedade intelectual.
+-   **Deployment Readiness:** Correção de bloqueadores de deploy (CORS, índices de DB) identificados pelo .
+-   **Architecture Evolution:** Início da migração para a arquitetura Doutor Legis 2.0 ULTRA com a expansão para 13 domínios e criação dos módulos base.
+
+**Earlier issues found/mentioned but not fixed**
+-   **Issue 1: Falta de projeções em consultas MongoDB**
+    -   **Debug checklist:** Inspecionar todos os  e  no código e adicionar um segundo argumento para especificar os campos a serem retornados, a fim de otimizar a performance.
+    -   **Why to solve this issue and what will be achieved with this?** Reduzir a latência e o consumo de recursos do banco de dados, crucial para a escalabilidade.
+    -   **Should Test frontend/backend/both after fix:** backend
+    -   **Is recurring issue?** N
+
+**Known issue recurrence from previous fork**
+-   None.
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+-   **Backend:** FastAPI
+-   **Frontend:** React
+-   **Database:** MongoDB (com a biblioteca  para operações assíncronas)
+-   **AI:** OpenAI GPT-4
+-   **Authentication:** JWT, Google OAuth (via Emergent Auth)
+-   **Payments:** Stripe
+
+**key DB schema**
+-   **users:** armazena informações do usuário, plano atual (), contagem de uso (, ), ID do Stripe ().
+-   **consultations:** armazena o histórico de cada consulta feita pelo usuário.
+-   **plans:** (implícito em ) armazena a configuração de cada plano (preço, limites).
+
+**changes in tech stack**
+-   O requisito inicial era PostgreSQL, mas foi alterado para **MongoDB** após acordo com o usuário.
+
+**All files**
+-   **Criados/Atualizados Recentemente:**
+    -   : Atualizado extensivamente para integrar a nova arquitetura ULTRA.
+    -   : Criado para definir os 4 planos de assinatura.
+    -   : Criado para a arquitetura ULTRA, contém a lógica de classificação de perguntas.
+    -   : Criado para a arquitetura ULTRA, placeholder para o sistema de aprendizado.
+    -   : Criado para a arquitetura ULTRA, contém prompts específicos por domínio.
+    -   : Criado para exibir o aviso de propriedade intelectual.
+    -   : Atualizado para exibir 4 cards de planos.
+-   **Documentos:**
+    -   , , , etc.: Vários arquivos markdown criados para registrar os requisitos e o progresso.
+
+**Areas that need refactoring**:
+-   O arquivo  está se tornando muito grande. A lógica de autenticação, planos, chat e domínios está toda no mesmo arquivo. Seria ideal refatorar usando  do FastAPI para separar as rotas em módulos lógicos (ex: , , ).
+
+**key api endpoints**
+-   : Verifica a saúde do backend.
+-   : Retorna informações do usuário autenticado.
+-   : Lista os domínios jurídicos disponíveis.
+-   : Processa uma consulta jurídica do usuário. **(Atualmente em modificação)**.
+-   : Lista os planos de assinatura disponíveis.
+-   : Cria uma sessão de pagamento no Stripe.
+
+**Critical Info for New Agent**
+-   **A prioridade máxima é finalizar a implementação da arquitetura Doutor Legis 2.0 ULTRA**, que está em andamento. O usuário está muito focado nesta evolução.
+-   O usuário concordou em usar **MongoDB**, não PostgreSQL.
+-   As integrações (OpenAI, Google Auth, Stripe) usam configurações e playbooks já estabelecidos no ambiente. Não é necessário pedir chaves ao usuário.
+-   O usuário fornece requisitos em blocos grandes através de texto e documentos . É crucial analisar esses documentos completamente.
+
+**documents created in this job**
+-   /app/README_DOUTOR_LEGIS.md
+-   /app/OAB_INTEGRATION_GUIDE.md
+-   /app/PLANOS_INTEGRADO.md
+-   /app/PROPRIEDADE_INTELECTUAL.md
+-   /app/PROMPT_MESTRE_DOUTOR_LEGIS.md
+-   /app/ULTRA_EVOLUTION_LOG.md
+
+**Last 5 User Messages and any pending user messages**
+1.  : O usuário pede para continuar a integração do Router Inteligente e Meta-Núcleo. (Status: Em andamento)
+2.  : (Várias mensagens) O agente confirma edições no  para integrar a arquitetura ULTRA. (Status: Concluído)
+3.  : O usuário cola novamente a especificação completa da arquitetura ULTRA, reforçando a prioridade e a direção do desenvolvimento. (Status: Pendente de continuação da implementação)
+4.  : O agente reconhece e se prepara para continuar a atualização do frontend. (Status: Em andamento)
+5.  A última ação do agente foi pensar em atualizar o frontend. A próxima ação deve ser focar em finalizar a integração do backend primeiro, já que está em um estado quebrado, antes de passar para o frontend.
+
+**Project Health Check:**
+-   **Broken:** O endpoint  está em meio a uma grande refatoração para a arquitetura ULTRA e provavelmente não está funcionando.
+-   **Mocked:** O sistema de  no  é atualmente um placeholder.
+
+**Testing status**
+-   **Testing agent used after significant changes:** YES (Usado após a implementação inicial, mas não após o início da evolução ULTRA).
+-   **Troubleshoot agent used after agent stuck in loop:** NO
+-   **Test files created:**  (um guia, não um script de teste).
+-   **Known regressions:** A funcionalidade de chat provavelmente está quebrada devido à refatoração em andamento.
+
+**Credentials to test flow:**
+Não são necessárias credenciais externas. O sistema gera usuários e tokens de teste internamente para fins de depuração.
+
+**What agent forgot to execute**
+-   O agente não abordou o aviso () do  sobre a falta de projeções nas consultas ao MongoDB.
+-   O agente estava prestes a trabalhar no frontend, mas a tarefa mais crítica e pendente é garantir que a integração do backend da arquitetura ULTRA esteja estável e funcional. A mudança de foco para o frontend seria prematura.</analysis>

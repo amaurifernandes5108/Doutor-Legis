@@ -170,7 +170,7 @@ Você é o Doutor Legis, um assistente jurídico...
 
 ### Teste Realizado
 ```bash
-curl -X POST https://themisbot.preview.emergentagent.com/api/consultation \
+curl -X POST https://legalai-18.preview.emergentagent.com/api/consultation \
   -H "Authorization: Bearer TOKEN" \
   -H "Content-Type: application/json" \
   -d '{

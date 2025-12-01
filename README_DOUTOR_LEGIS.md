@@ -145,7 +145,7 @@ RATE_LIMIT_PER_MINUTE=60
 
 **Frontend (.env):**
 ```bash
-REACT_APP_BACKEND_URL=https://themisbot.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://legalai-18.preview.emergentagent.com
 WDS_SOCKET_PORT=443
 REACT_APP_ENABLE_VISUAL_EDITS=false
 ENABLE_HEALTH_CHECK=false
@@ -221,10 +221,10 @@ GET /api/health                  # Health check
 
 ```bash
 # Health check
-curl https://themisbot.preview.emergentagent.com/api/health
+curl https://legalai-18.preview.emergentagent.com/api/health
 
 # Listar domínios
-curl https://themisbot.preview.emergentagent.com/api/domains
+curl https://legalai-18.preview.emergentagent.com/api/domains
 
 # Criar usuário de teste no MongoDB
 mongosh --eval "
@@ -252,14 +252,14 @@ print('Session Token: ' + sessionToken);
 # Testar autenticação
 SESSION_TOKEN="seu_token_aqui"
 curl -H "Authorization: Bearer $SESSION_TOKEN" \
-  https://themisbot.preview.emergentagent.com/api/auth/me
+  https://legalai-18.preview.emergentagent.com/api/auth/me
 
 # Testar consulta
 curl -X POST \
   -H "Authorization: Bearer $SESSION_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"domain":"civil","question":"Quais os direitos do consumidor?"}' \
-  https://themisbot.preview.emergentagent.com/api/consultation
+  https://legalai-18.preview.emergentagent.com/api/consultation
 ```
 
 ### Teste Automatizado
@@ -328,7 +328,7 @@ Small: 0.85rem
 ### Health Check
 
 ```bash
-curl https://themisbot.preview.emergentagent.com/api/health
+curl https://legalai-18.preview.emergentagent.com/api/health
 ```
 
 Retorna:
@@ -382,8 +382,8 @@ sudo tail -f /var/log/mongodb/mongod.log
 
 ## 📞 Suporte
 
-- **URL da Aplicação**: https://themisbot.preview.emergentagent.com
-- **Backend API**: https://themisbot.preview.emergentagent.com/api
+- **URL da Aplicação**: https://legalai-18.preview.emergentagent.com
+- **Backend API**: https://legalai-18.preview.emergentagent.com/api
 - **Documentação API**: /api/docs (FastAPI auto-generated)
 
 ## 📝 Notas Importantes

@@ -425,7 +425,7 @@ event = stripe.Webhook.construct_event(
 
 ### Teste de Upgrade
 ```bash
-curl -X POST https://themisbot.preview.emergentagent.com/api/planos/upgrade \
+curl -X POST https://legalai-18.preview.emergentagent.com/api/planos/upgrade \
   -H "Authorization: Bearer TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"plano":"intermediario","tipo_pagamento":"mensal"}'
@@ -433,7 +433,7 @@ curl -X POST https://themisbot.preview.emergentagent.com/api/planos/upgrade \
 
 ### Teste de Limite
 ```bash
-curl https://themisbot.preview.emergentagent.com/api/planos/verificar-limite?tipo=consulta \
+curl https://legalai-18.preview.emergentagent.com/api/planos/verificar-limite?tipo=consulta \
   -H "Authorization: Bearer TOKEN"
 ```
 
@@ -455,14 +455,14 @@ stripe trigger customer.subscription.created
 
 ### 2. Inicializar Planos
 ```bash
-curl -X POST https://themisbot.preview.emergentagent.com/admin/init-planos
+curl -X POST https://legalai-18.preview.emergentagent.com/admin/init-planos
 ```
 
 ### 3. Configurar Webhook
 ```bash
 # No dashboard Stripe:
 # Webhooks → Add endpoint
-# URL: https://themisbot.preview.emergentagent.com/api/webhook/stripe
+# URL: https://legalai-18.preview.emergentagent.com/api/webhook/stripe
 # Eventos: customer.subscription.*, invoice.*
 # Copiar webhook secret para .env
 ```
@@ -495,7 +495,7 @@ SENDGRID_API_KEY=SG.xxx
 SENDGRID_FROM_EMAIL=noreply@doutorlegis.com.br
 
 # App
-APP_URL=https://themisbot.preview.emergentagent.com
+APP_URL=https://legalai-18.preview.emergentagent.com
 ```
 
 ---
