@@ -69,7 +69,7 @@ function LandingPage() {
           </div>
           <div className="hero-trust">
             <span>✓ Baseado em legislação atual</span>
-            <span>✓ 8 domínios jurídicos</span>
+            <span>✓ 13 domínios jurídicos ULTRA</span>
             <span>✓ Análise em segundos</span>
           </div>
         </div>
