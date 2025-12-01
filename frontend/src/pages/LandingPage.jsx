@@ -167,7 +167,7 @@ function LandingPage() {
               <ul>
                 <li>✓ Consultas ILIMITADAS</li>
                 <li>✓ PDFs ILIMITADOS</li>
-                <li>✓ 9 domínios (TODOS)</li>
+                <li>✓ 13 núcleos ULTRA (TODOS)</li>
                 <li>✓ Histórico permanente</li>
                 <li>✓ Suporte total (chat + email + tel)</li>
                 <li>✓ Account Manager</li>
