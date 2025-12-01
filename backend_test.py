@@ -362,23 +362,23 @@ class DoutorLegisAPITester:
         
         success, response_data, status = self.make_request('POST', endpoint)
         
-        if success and status == 200 and isinstance(response, dict):
+        if success and status == 200 and isinstance(response_data, dict):
             required_fields = ['dominio_sugerido', 'confianca', 'detalhes', 'sugestoes_alternativas']
-            missing_fields = [f for f in required_fields if f not in response]
+            missing_fields = [f for f in required_fields if f not in response_data]
             
             if not missing_fields:
                 # Should classify OAB question correctly
-                if response.get('dominio_sugerido') == 'etica_advocacia_oab':
-                    self.log_test("Router Inteligente Classification", True, f"Correctly classified OAB question", response)
+                if response_data.get('dominio_sugerido') == 'etica_advocacia_oab':
+                    self.log_test("Router Inteligente Classification", True, f"Correctly classified OAB question", response_data)
                     return True
                 else:
-                    self.log_test("Router Inteligente Classification", False, f"Wrong classification: {response.get('dominio_sugerido')}")
+                    self.log_test("Router Inteligente Classification", False, f"Wrong classification: {response_data.get('dominio_sugerido')}")
                     return False
             else:
                 self.log_test("Router Inteligente Classification", False, f"Missing fields: {missing_fields}")
                 return False
         else:
-            self.log_test("Router Inteligente Classification", False, f"Status: {status}, Response: {response}")
+            self.log_test("Router Inteligente Classification", False, f"Status: {status}, Response: {response_data}")
             return False
 
     def test_admin_status_endpoint(self):
