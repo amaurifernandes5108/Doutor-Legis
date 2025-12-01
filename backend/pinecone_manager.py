@@ -183,29 +183,33 @@ Namespaces disponíveis:
         self,
         domain: str,
         vectors: List[tuple],
-        namespace: str = ""
+        sub_namespace: str = ""
     ):
-        """Insere/atualiza vetores em um índice
+        """Insere/atualiza vetores no índice único usando namespace do domínio
         
         Args:
-            domain: Nome do domínio jurídico
+            domain: Nome do domínio jurídico (usado como namespace principal)
             vectors: Lista de tuplas (id, values, metadata)
-            namespace: Namespace para organizar vetores (opcional)
+            sub_namespace: Sub-namespace opcional (ex: "consultations", "legislation")
         """
         try:
-            index = self.get_index(domain)
+            index = self.get_index()
+            
+            # Namespace = domínio (ou domínio/sub_namespace se especificado)
+            namespace = f"{domain}/{sub_namespace}" if sub_namespace else domain
+            
             response = index.upsert(
                 vectors=vectors,
                 namespace=namespace
             )
             
             logger.info(
-                f"✅ Upsert em {domain}: {response.upserted_count} vetores"
+                f"✅ Upsert em namespace '{namespace}': {response.upserted_count} vetores"
             )
             return response
             
         except Exception as e:
-            logger.error(f"❌ Erro no upsert para {domain}: {str(e)}")
+            logger.error(f"❌ Erro no upsert para namespace {domain}: {str(e)}")
             raise
     
     def query_vectors(
