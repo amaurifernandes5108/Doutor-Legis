@@ -33,6 +33,9 @@ from planos_config import (
     get_dominios_disponiveis,
     PLANOS
 )
+from router_inteligente import classificar_pergunta, sugerir_dominios
+from meta_nucleo import meta_nucleo
+from nucleos_especializados import get_prompt_nucleo
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env', override=False)
@@ -456,6 +459,19 @@ async def get_domains():
     """Get all legal domains"""
     return DOMAINS
 
+@api_router.post("/domains/classificar")
+async def classificar_dominio(pergunta: str):
+    """Classifica pergunta e sugere domínio (Router Inteligente)"""
+    dominio, confianca, detalhes = classificar_pergunta(pergunta)
+    sugestoes = sugerir_dominios(pergunta, top_n=3)
+    
+    return {
+        "dominio_sugerido": dominio,
+        "confianca": round(confianca, 1),
+        "detalhes": detalhes,
+        "sugestoes_alternativas": sugestoes
+    }
+
 @api_router.post("/consultation", response_model=ConsultationResponse)
 @limiter.limit("60/minute")
 async def create_consultation(
@@ -488,11 +504,23 @@ async def create_consultation(
         )
     
     try:
+        # ULTRA: Classificar automaticamente se não especificado domínio correto
+        dominio_sugerido, router_confidence, router_detalhes = classificar_pergunta(consultation_req.question)
+        
+        # Se domínio selecionado diferente do sugerido e router tem alta confiança, avisar
+        if consultation_req.domain != dominio_sugerido and router_confidence > 80:
+            logger.info(f"Router sugere {dominio_sugerido} (conf: {router_confidence}%), usuário selecionou {consultation_req.domain}")
+        
         # Get OAB context if applicable
         oab_context = get_oab_context(consultation_req.domain)
         
+        # ULTRA: Get specialized prompt from núcleo
+        nucleo_prompt = get_prompt_nucleo(consultation_req.domain)
+        
         # Build prompt for legal analysis
         system_prompt = f"""{oab_context}
+
+{nucleo_prompt}
 
 ---
 
@@ -501,6 +529,8 @@ Você é o Doutor Legis, um assistente jurídico especializado em Direito Brasil
 Domínio: {domain_info['name']}
 Legislação: {domain_info['legislation']}
 Corte Competente: {domain_info['court']}
+Núcleo: {domain_info['nucleo']}
+Expertise: {domain_info['expertise']}
 
 Forneça uma análise jurídica completa e estruturada seguindo EXATAMENTE este formato JSON:
 
@@ -583,6 +613,15 @@ IMPORTANTE:
         consultation_dict = consultation.model_dump()
         consultation_dict['created_at'] = consultation_dict['created_at'].isoformat()
         await db.consultations.insert_one(consultation_dict)
+        
+        # ULTRA: Registrar no Meta-Núcleo para aprendizado
+        meta_nucleo.registrar_consulta(
+            dominio=consultation_req.domain,
+            confidence=confidence,
+            processing_time=processing_time,
+            tokens_used=tokens_used,
+            router_confidence=router_confidence
+        )
         
         # Incrementar contador de consultas (exceto plano avançado que é ilimitado)
         plano_config = get_plano_config(current_user.plan)
@@ -995,8 +1034,82 @@ async def health_check():
     return {
         "status": "healthy",
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "version": "2.0.0",
-        "oab_integration": "active"
+        "version": "2.0.0-ULTRA",
+        "oab_integration": "active",
+        "nucleos_ativos": 13,
+        "router_inteligente": "active",
+        "meta_nucleo": "active"
+    }
+
+# =============================================================================
+# ULTRA - ANALYTICS & META-NÚCLEO
+# =============================================================================
+
+@api_router.get("/analytics/performance")
+async def get_performance_analytics(current_user: User = Depends(get_current_user)):
+    """Retorna analytics do Meta-Núcleo"""
+    # Apenas para usuários plano avançado ou admin
+    if current_user.plan != "avancado":
+        raise HTTPException(
+            status_code=403,
+            detail="Analytics disponível apenas no Plano Avançado"
+        )
+    
+    return meta_nucleo.get_dashboard_data()
+
+@api_router.get("/analytics/router-stats")
+async def get_router_stats():
+    """Estatísticas do Router Inteligente"""
+    from router_inteligente import router
+    return {
+        "stats": router.get_stats(),
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+
+@api_router.post("/feedback")
+async def enviar_feedback(
+    consulta_id: str,
+    rating: int,
+    comentario: Optional[str] = None,
+    current_user: User = Depends(get_current_user)
+):
+    """Enviar feedback sobre uma consulta"""
+    if rating < 1 or rating > 5:
+        raise HTTPException(status_code=400, detail="Rating deve ser entre 1 e 5")
+    
+    # Buscar consulta
+    consulta = await db.consultations.find_one(
+        {"id": consulta_id, "user_id": current_user.id},
+        {"_id": 0, "domain": 1}
+    )
+    
+    if not consulta:
+        raise HTTPException(status_code=404, detail="Consulta não encontrada")
+    
+    # Salvar feedback no MongoDB
+    feedback_doc = {
+        "id": str(uuid.uuid4()),
+        "consulta_id": consulta_id,
+        "usuario_id": current_user.id,
+        "dominio": consulta["domain"],
+        "rating": rating,
+        "comentario": comentario,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.feedbacks.insert_one(feedback_doc)
+    
+    # ULTRA: Registrar no Meta-Núcleo
+    meta_nucleo.registrar_feedback(
+        consulta_id=consulta_id,
+        dominio=consulta["domain"],
+        rating=rating,
+        comentario=comentario,
+        usuario_id=current_user.id
+    )
+    
+    return {
+        "message": "Feedback registrado com sucesso",
+        "rating": rating
     }
 
 # Include the router in the main app
