@@ -324,7 +324,7 @@ Forneça análise jurídica no formato JSON padrão.
             self.pinecone.upsert_vectors(
                 domain=domain,
                 vectors=vectors,
-                namespace="consultations"
+                sub_namespace="consultations"
             )
             
             logger.info(
