@@ -291,12 +291,19 @@ Responda APENAS com o JSON, sem texto adicional."""
         oab_context: str,
         nucleo_prompt: str
     ) -> Dict[str, Any]:
-        """IA-3: Análise Jurisprudencial usando Gemini Pro"""
+        """IA-3: Análise Jurisprudencial usando Gemini ou GPT-4 (fallback)"""
+        # Tentar Gemini primeiro
         try:
             import google.generativeai as genai
             
             genai.configure(api_key=self.google_key)
-            model = genai.GenerativeModel('gemini-2.0-flash-exp')
+            
+            # Tentar modelos em ordem de preferência
+            models_to_try = ['gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-pro']
+            
+            for model_name in models_to_try:
+                try:
+                    model = genai.GenerativeModel(model_name)
             
             prompt = f"""Você é a IA Especializada em ANÁLISE JURISPRUDENCIAL.
 
