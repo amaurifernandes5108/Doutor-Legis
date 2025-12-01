@@ -98,14 +98,25 @@ class RAGSystem:
             # 3. Construir contexto
             context = self._build_context(relevant_docs)
             
-            # 4. Gerar resposta com LLM usando contexto
+            # 4. Gerar resposta - usar Multi-AI se disponível, senão single-LLM
             logger.info(f"RAG: Gerando resposta com {len(relevant_docs)} documentos")
-            response = await self._generate_with_context(
-                domain=domain,
-                question=question,
-                context=context,
-                relevant_docs=relevant_docs
-            )
+            
+            if self.multi_ai_enabled and self.orchestrator:
+                logger.info("🚀 Usando Multi-AI Orchestrator (5 IAs paralelas)")
+                response = await self._generate_with_multi_ai(
+                    domain=domain,
+                    question=question,
+                    context=context,
+                    relevant_docs=relevant_docs
+                )
+            else:
+                logger.info("📝 Usando Single-LLM (fallback)")
+                response = await self._generate_with_context(
+                    domain=domain,
+                    question=question,
+                    context=context,
+                    relevant_docs=relevant_docs
+                )
             
             return {
                 "response": response,
