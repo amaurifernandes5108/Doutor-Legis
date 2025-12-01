@@ -157,7 +157,7 @@ PLANOS = {
         features=[
             "Consultas ILIMITADAS",
             "PDFs ILIMITADOS",
-            "9 domínios jurídicos (todos)",
+            "13 domínios jurídicos (todos os núcleos ULTRA)",
             "PDF profissional + Word",
             "Dashboard completo",
             "Histórico permanente",
