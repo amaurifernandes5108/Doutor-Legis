@@ -121,7 +121,7 @@ PLANOS = {
         desconto_anual=25,
         consultas_mes=150,
         pdfs_mes=25,
-        dominios_disponiveis=9,  # Todos
+        dominios_disponiveis=13,  # Todos os 13 núcleos
         historico_meses=12,
         features=[
             "150 consultas jurídicas por mês",
