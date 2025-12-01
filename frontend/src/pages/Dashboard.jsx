@@ -273,7 +273,11 @@ function Dashboard({ user, setUser }) {
             <div className="user-details">
               <span className="user-name" data-testid="user-name">{user.name}</span>
               <span className="user-plan" data-testid="user-plan">
-                {user.plan === "premium" ? (
+                {adminStatus?.is_admin_master ? (
+                  <span className="admin-badge">
+                    <Crown size={14} style={{ color: '#D4AF37' }} /> Admin Master
+                  </span>
+                ) : user.plan === "premium" ? (
                   <><Crown size={14} /> Premium</>
                 ) : (
                   `${user.token_balance} consultas restantes`
