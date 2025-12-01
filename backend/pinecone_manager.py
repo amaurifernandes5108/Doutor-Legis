@@ -28,18 +28,18 @@ LEGAL_DOMAINS = [
 ]
 
 class PineconeManager:
-    """Gerenciador central de índices Pinecone"""
+    """Gerenciador central de índices Pinecone com arquitetura de namespace único"""
     
-    def __init__(self, api_key: str, index_prefix: str = "legal-"):
+    def __init__(self, api_key: str, index_name: str = "legal-ultra"):
         """Inicializa conexão com Pinecone
         
         Args:
             api_key: Pinecone API key
-            index_prefix: Prefixo para nomear índices
+            index_name: Nome do índice único para todos os domínios
         """
         self.pc = Pinecone(api_key=api_key)
-        self.index_prefix = index_prefix
-        self.indexes = {}
+        self.index_name = index_name
+        self.index = None
         
     def create_index(
         self,
