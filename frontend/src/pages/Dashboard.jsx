@@ -291,14 +291,28 @@ function Dashboard({ user, setUser }) {
         </div>
 
         <div className="chat-messages" data-testid="chat-messages">
+          {adminStatus?.is_admin_master && (
+            <div className="admin-banner">
+              <Crown size={20} style={{ color: '#D4AF37' }} />
+              <div className="admin-banner-content">
+                <strong>🌟 Modo Administrador Master Fundador Ativo</strong>
+                <span>Você tem acesso pleno a todos os 13 núcleos jurídicos ULTRA sem limites</span>
+              </div>
+            </div>
+          )}
           {messages.length === 0 ? (
             <div className="empty-state">
               <div className="empty-icon">⚖️</div>
-              <h3>Bem-vindo ao Doutor Legis 2.0</h3>
+              <h3>Bem-vindo ao Doutor Legis 2.0 {adminStatus?.is_admin_master ? 'ULTRA' : ''}</h3>
               <p>
                 Faça sua pergunta jurídica e receba uma análise completa com<br />
                 legislação aplicável, jurisprudência e recomendações.
               </p>
+              {adminStatus?.is_admin_master && (
+                <p style={{ color: '#D4AF37', fontWeight: 600, marginTop: '1rem' }}>
+                  ✓ 13 Domínios Especializados | ✓ Consultas Ilimitadas | ✓ Analytics Completo
+                </p>
+              )}
             </div>
           ) : (
             messages.map((msg, idx) => (
