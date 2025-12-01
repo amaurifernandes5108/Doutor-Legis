@@ -96,10 +96,28 @@ function Dashboard({ user, setUser }) {
     setLoading(true);
 
     try {
+      // ULTRA: Classificar pergunta automaticamente (sugerir domínio)
+      let dominioFinal = selectedDomain.id;
+      try {
+        const classResponse = await axios.post(
+          `${API}/domains/classificar?pergunta=${encodeURIComponent(userMessage)}`
+        );
+        
+        if (classResponse.data.confianca > 80 && 
+            classResponse.data.dominio_sugerido !== selectedDomain.id) {
+          const domSugerido = domains.find(d => d.id === classResponse.data.dominio_sugerido);
+          if (domSugerido) {
+            toast.info(`💡 Router Inteligente sugere: ${domSugerido.name}`);
+          }
+        }
+      } catch (err) {
+        console.log("Router classification optional error:", err);
+      }
+
       const response = await axios.post(
         `${API}/consultation`,
         {
-          domain: selectedDomain.id,
+          domain: dominioFinal,
           question: userMessage
         },
         {
@@ -134,6 +152,22 @@ function Dashboard({ user, setUser }) {
       setMessages(prev => prev.slice(0, -1)); // Remove user message on error
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFeedback = async (consultaId, rating) => {
+    try {
+      await axios.post(
+        `${API}/feedback`,
+        {
+          consulta_id: consultaId,
+          rating: rating
+        },
+        { withCredentials: true }
+      );
+      toast.success("Obrigado pelo feedback!");
+    } catch (error) {
+      console.error("Feedback error:", error);
     }
   };
 
