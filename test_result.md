@@ -50,15 +50,18 @@ backend:
 
   - task: "Integração RAG com /api/consultation"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Endpoint /api/consultation atualizado para usar RAG quando disponível. Fallback automático para geração padrão se RAG não encontrar documentos. Consultas armazenadas no Pinecone para aprendizado."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: Integração RAG com /api/consultation 100% funcional. RAG ativo em domínios com dados (constitucional, consumidor, trabalhista) com rag_used=true e documents_found>0. Fallback automático funcionando em domínios sem dados (penal). Resposta JSON estruturada com 8 seções. Corrigido ConsultationResponse para incluir confidence, tokens_used, processing_time."
 
   - task: "Endpoint /api/analytics/pinecone-stats"
     implemented: true
