@@ -54,6 +54,18 @@ function Dashboard({ user, setUser }) {
     }
   };
 
+  const fetchAdminStatus = async () => {
+    try {
+      const response = await axios.get(`${API}/auth/admin-status`, {
+        withCredentials: true
+      });
+      setAdminStatus(response.data);
+    } catch (error) {
+      console.error("Error fetching admin status:", error);
+      setAdminStatus({ is_admin_master: false });
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await axios.post(`${API}/auth/logout`, {}, {
