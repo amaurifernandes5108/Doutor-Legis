@@ -112,21 +112,16 @@ Namespaces disponíveis:
             logger.error(f"Erro na inicialização: {str(e)}")
             return {"success": False, "error": str(e)}
     
-    def get_index(self, domain: str):
-        """Obtém referência para um índice específico
+    def get_index(self):
+        """Obtém referência para o índice único
         
-        Args:
-            domain: Nome do domínio jurídico
-            
         Returns:
             Pinecone Index object
         """
-        index_name = f"{self.index_prefix}{domain}"
+        if self.index is None:
+            self.index = self.pc.Index(self.index_name)
         
-        if domain not in self.indexes:
-            self.indexes[domain] = self.pc.Index(index_name)
-        
-        return self.indexes[domain]
+        return self.index
     
     def delete_index(self, domain: str):
         """Remove um índice Pinecone
