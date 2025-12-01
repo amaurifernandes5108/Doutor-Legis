@@ -129,7 +129,7 @@ Conteúdo: {text}
         context: str,
         relevant_docs: List[Dict[str, Any]]
     ) -> Dict[str, Any]:
-        """Gera resposta usando contexto recuperado
+        """Gera resposta usando contexto recuperado com sistema Multi-AI
         
         Args:
             domain: Domínio jurídico
@@ -140,44 +140,47 @@ Conteúdo: {text}
         Returns:
             Resposta estruturada do LLM
         """
-        # Importar prompts dos núcleos especializados
+        # Importar sistema Multi-AI
+        from multi_ai_prompt_system import get_multi_ai_prompt
         from nucleos_especializados import get_prompt_nucleo
+        from oab_knowledge_base import get_oab_context
         
+        # Obter contextos
         nucleo_prompt = get_prompt_nucleo(domain)
+        oab_context = get_oab_context(domain)
         
-        system_prompt = f"""{nucleo_prompt}
+        # Gerar prompt Multi-AI
+        multi_ai_system = get_multi_ai_prompt(domain, oab_context, nucleo_prompt)
+        
+        system_prompt = f"""{multi_ai_system}
 
 ---
 
-**CONTEXTO RECUPERADO (RAG):**
-
-Você recebeu os seguintes documentos jurídicos relevantes para responder à pergunta:
+**CONTEXTO RECUPERADO (RAG) - DOCUMENTOS JURÍDICOS:**
 
 {context}
 
 ---
 
-**INSTRUÇÕES IMPORTANTES:**
+**INSTRUÇÕES CRÍTICAS PARA USO DO RAG:**
 
-1. Use PRIORITARIAMENTE o contexto recuperado acima para fundamentar sua resposta
-2. Cite explicitamente os documentos quando relevante
-3. Se o contexto não for suficiente, indique claramente
-4. Mantenha a estrutura JSON de resposta padrão
-5. Inclua referências aos documentos recuperados na sua análise
+1. **PRIORIZE** os documentos recuperados acima na sua análise
+2. **CITE EXPLICITAMENTE** cada documento usado com formato completo
+3. **CONECTE** cada citação ao caso específico do usuário
+4. Cada documento tem score de relevância - use os de maior score primeiro
+5. Se documento não for suficiente, complemente com conhecimento geral mas INDIQUE claramente
 
-Forneça uma análise jurídica completa e estruturada seguindo EXATAMENTE este formato JSON:
+**FORMATO DE RESPOSTA:**
 
-{{
-  "resumo": "Breve resumo da questão (2-3 linhas)",
-  "legislacao_aplicavel": "Leis, artigos e normas aplicáveis (cite os documentos recuperados)",
-  "jurisprudencia": "Precedentes e jurisprudência relevante",
-  "analise_legal": "Análise detalhada sob a perspectiva jurídica (use o contexto recuperado)",
-  "riscos_juridicos": "Principais riscos e pontos de atenção",
-  "recomendacoes": "Recomendações práticas e estratégicas",
-  "proximos_passos": "Este conteúdo não constitui consultoria jurídica vinculativa. Recomenda-se consultar um advogado para análise específica do seu caso.",
-  "confianca": 90,
-  "fontes_utilizadas": ["Documento 1", "Documento 2"]
-}}
+Forneça a resposta seguindo EXATAMENTE a estrutura Multi-Dimensional definida no sistema prompt, incluindo:
+- Análise das 5 perspectivas (Constitucional, Infraconstitucional, Jurisprudencial, Doutrinária, Metodológica)
+- Conclusão unificada com tese jurídica consolidada
+- Dispositivos normativos aplicáveis (dos documentos RAG)
+- Precedentes vinculantes (dos documentos RAG)
+- Índices de qualidade
+- Nível de segurança jurídica
+
+**IMPORTANTE:** Use Markdown para formatação (títulos com ##, listas com -, negrito com **).
 """
         
         # Criar sessão LLM
