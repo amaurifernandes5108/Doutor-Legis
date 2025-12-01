@@ -89,29 +89,28 @@ class PineconeManager:
             logger.error(f"❌ Erro ao criar índice {self.index_name}: {str(e)}")
             raise
     
-    def create_all_indexes(self):
-        """Cria índices para todos os 13 domínios jurídicos"""
-        logger.info("Criando índices para todos os domínios...")
+    def initialize(self):
+        """Inicializa o índice único para todos os 13 domínios"""
+        logger.info("🚀 Inicializando arquitetura com namespace único...")
         
-        created = []
-        failed = []
-        
-        for domain in LEGAL_DOMAINS:
-            try:
-                index_name = self.create_index(domain)
-                created.append(index_name)
-            except Exception as e:
-                logger.error(f"Falha ao criar índice para {domain}: {str(e)}")
-                failed.append(domain)
-        
-        logger.info(f"""
-Resumo da criação de índices:
-- Criados: {len(created)} índices
-- Falhas: {len(failed)} índices
-- Domínios criados: {created}
+        try:
+            self.create_index()
+            
+            logger.info(f"""
+✅ Inicialização completa!
+
+Índice criado: {self.index_name}
+Arquitetura: 1 índice com 13 namespaces
+Namespaces disponíveis:
 """)
-        
-        return {"created": created, "failed": failed}
+            for i, domain in enumerate(LEGAL_DOMAINS, 1):
+                logger.info(f"  {i}. {domain}")
+            
+            return {"success": True, "index": self.index_name, "namespaces": LEGAL_DOMAINS}
+            
+        except Exception as e:
+            logger.error(f"Erro na inicialização: {str(e)}")
+            return {"success": False, "error": str(e)}
     
     def get_index(self, domain: str):
         """Obtém referência para um índice específico
