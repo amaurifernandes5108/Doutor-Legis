@@ -152,7 +152,7 @@ PLANOS = {
         desconto_anual=30,
         consultas_mes=None,  # Ilimitado
         pdfs_mes=None,  # Ilimitado
-        dominios_disponiveis=9,  # Todos
+        dominios_disponiveis=13,  # Todos os 13 núcleos
         historico_meses=None,  # Permanente
         features=[
             "Consultas ILIMITADAS",
