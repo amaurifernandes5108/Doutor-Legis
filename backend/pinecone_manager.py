@@ -271,21 +271,23 @@ Namespaces disponíveis:
         self,
         domain: str,
         ids: List[str],
-        namespace: str = ""
+        sub_namespace: str = ""
     ):
-        """Remove vetores de um índice
+        """Remove vetores de um namespace
         
         Args:
-            domain: Nome do domínio jurídico
+            domain: Nome do domínio jurídico (namespace)
             ids: IDs dos vetores a remover
-            namespace: Namespace dos vetores
+            sub_namespace: Sub-namespace opcional
         """
         try:
-            index = self.get_index(domain)
+            index = self.get_index()
+            namespace = f"{domain}/{sub_namespace}" if sub_namespace else domain
+            
             index.delete(ids=ids, namespace=namespace)
             
-            logger.info(f"✅ Removidos {len(ids)} vetores de {domain}")
+            logger.info(f"✅ Removidos {len(ids)} vetores de namespace '{namespace}'")
             
         except Exception as e:
-            logger.error(f"Erro ao remover vetores de {domain}: {str(e)}")
+            logger.error(f"Erro ao remover vetores de namespace {domain}: {str(e)}")
             raise
