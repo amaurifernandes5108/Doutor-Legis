@@ -27,8 +27,8 @@ def main():
     print(f"✅ API Key encontrada: {api_key[:10]}...")
     print()
     
-    # Criar gerenciador
-    manager = PineconeManager(api_key=api_key)
+    # Criar gerenciador com índice único
+    manager = PineconeManager(api_key=api_key, index_name="legal-ultra")
     
     # Listar índices existentes
     print("📋 Verificando índices existentes...")
@@ -38,30 +38,26 @@ def main():
         print(f"   - {idx.get('name')}")
     print()
     
-    # Criar índices para os 13 domínios
-    print(f"🚀 Criando {len(LEGAL_DOMAINS)} índices para domínios jurídicos...")
+    # Criar índice único com namespaces
+    print(f"🚀 Criando índice único com {len(LEGAL_DOMAINS)} namespaces...")
     print()
     
-    results = manager.create_all_indexes()
+    results = manager.initialize()
     
     print()
     print("="*60)
     print("RESUMO DA INICIALIZAÇÃO")
     print("="*60)
-    print(f"✅ Criados com sucesso: {len(results['created'])}")
-    print(f"❌ Falhas: {len(results['failed'])}")
-    print()
     
-    if results['created']:
-        print("Índices criados:")
-        for idx in results['created']:
-            print(f"   ✓ {idx}")
-    
-    if results['failed']:
+    if results['success']:
+        print(f"✅ Índice criado: {results['index']}")
+        print(f"📦 Namespaces disponíveis: {len(results['namespaces'])}")
         print()
-        print("Falhas:")
-        for domain in results['failed']:
-            print(f"   ✗ {domain}")
+        print("Domínios jurídicos (namespaces):")
+        for i, domain in enumerate(results['namespaces'], 1):
+            print(f"   {i}. {domain}")
+    else:
+        print(f"❌ Erro: {results.get('error')}")
     
     print()
     print("="*60)
