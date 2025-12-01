@@ -471,6 +471,27 @@ async def logout(request: Request, response: Response, current_user: User = Depe
     response.delete_cookie(key="session_token", path="/")
     return {"message": "Logout realizado com sucesso"}
 
+@api_router.get("/auth/admin-status")
+async def get_admin_status(current_user: User = Depends(get_current_user)):
+    """Verifica status de administrador"""
+    is_admin = is_admin_master(current_user)
+    
+    return {
+        "is_admin_master": is_admin,
+        "role": current_user.role,
+        "email": current_user.email,
+        "privilegios": {
+            "consultas_ilimitadas": is_admin,
+            "pdfs_ilimitados": is_admin,
+            "acesso_todos_dominios": is_admin,
+            "acesso_analytics": is_admin,
+            "bypass_limites_plano": is_admin,
+            "historico_permanente": is_admin
+        },
+        "plano_atual": current_user.plan,
+        "message": "Administrador Master Fundador - Acesso Pleno" if is_admin else "Usuário padrão"
+    }
+
 # =============================================================================
 # CONSULTATION ROUTES
 # =============================================================================
