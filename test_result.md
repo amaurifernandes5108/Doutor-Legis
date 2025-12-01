@@ -65,15 +65,18 @@ backend:
 
   - task: "Endpoint /api/analytics/pinecone-stats"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Novo endpoint exclusivo para admin_master visualizar estatísticas do Pinecone (total de vetores, namespaces populados, stats por domínio)."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: Endpoint /api/analytics/pinecone-stats funcionando corretamente. Acesso restrito a admin_master (amaurifernandes1975@gmail.com). Retorna: status=active, total_vectors=20, rag_enabled=true, namespaces_populated=6, domain_stats com detalhes por domínio. Índice legal-ultra ativo."
 
   - task: "Script de inicialização Pinecone"
     implemented: true
