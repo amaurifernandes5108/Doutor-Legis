@@ -196,31 +196,16 @@ Forneça a resposta seguindo EXATAMENTE a estrutura Multi-Dimensional definida n
         user_message = UserMessage(text=question)
         response_text = await chat.send_message(user_message)
         
-        # Parse JSON response
-        import json
-        try:
-            response_json = json.loads(response_text)
-            
-            # Adicionar informação sobre RAG
-            response_json["rag_enabled"] = True
-            response_json["documents_used"] = len(relevant_docs)
-            
-        except:
-            # Fallback se não for JSON válido
-            response_json = {
-                "resumo": response_text[:200],
-                "legislacao_aplicavel": "Baseado nos documentos recuperados",
-                "jurisprudencia": "Consulte os documentos fornecidos",
-                "analise_legal": response_text,
-                "riscos_juridicos": "Análise requer avaliação específica",
-                "recomendacoes": "Recomenda-se consultar um advogado",
-                "proximos_passos": "Este conteúdo não constitui consultoria jurídica vinculativa.",
-                "confianca": 75,
-                "rag_enabled": True,
-                "documents_used": len(relevant_docs)
-            }
+        # Resposta em formato Markdown estruturado
+        response_data = {
+            "analise_completa": response_text,  # Texto completo em Markdown
+            "rag_enabled": True,
+            "documents_used": len(relevant_docs),
+            "confianca": 90,  # Alta confiança quando usa RAG
+            "formato": "multi_ai_markdown"
+        }
         
-        return response_json
+        return response_data
     
     async def _generate_without_context(
         self,
