@@ -613,10 +613,10 @@ async def create_consultation(
                     # Meta-núcleo: Registrar consulta RAG
                     meta_nucleo.registrar_consulta(
                         dominio=consultation_req.domain,
-                        pergunta=consultation_req.question,
-                        confianca=response_data.get("confianca", 85),
-                        tempo_resposta=elapsed_time / 1000,
-                        sucesso=True
+                        confidence=response_data.get("confianca", 85),
+                        processing_time=elapsed_time / 1000,
+                        tokens_used=len(str(response_data)) // 4,  # Rough estimate
+                        router_confidence=router_confidence
                     )
                     
                     # Incrementar contador (exceto admin)
