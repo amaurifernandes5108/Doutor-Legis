@@ -82,8 +82,8 @@ function LandingPage() {
           <div className="features-grid">
             <div className="feature-card">
               <div className="feature-icon">⚖️</div>
-              <h3>8 Domínios Jurídicos</h3>
-              <p>Constitucional, Civil, Consumidor, Imobiliário, Público, Trabalhista, Empresarial e Internacional</p>
+              <h3>13 Núcleos Jurídicos ULTRA</h3>
+              <p>Constitucional, Civil, Consumidor, Imobiliário, Público, Trabalhista, Empresarial, Internacional, Ética OAB, Penal, Tributário, Previdenciário e Tecnologia</p>
             </div>
             <div className="feature-card">
               <div className="feature-icon">📚</div>
