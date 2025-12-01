@@ -5,15 +5,18 @@ user_problem_statement: "Integração Pinecone Vector Database com RAG para Dout
 backend:
   - task: "Pinecone Manager - Arquitetura de namespace único"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/pinecone_manager.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Criado gerenciador Pinecone com 1 índice único (legal-ultra) e 13 namespaces para domínios jurídicos. Suporta upsert, query, delete com sub-namespaces (legislation, jurisprudence, consultations)."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: Pinecone Manager funcionando corretamente. Índice legal-ultra ativo com 20 vetores, 6 namespaces populados. Stats acessíveis via /api/analytics/pinecone-stats (admin_master). Arquitetura de namespace único validada."
 
   - task: "Document Processor - Chunking e Embeddings"
     implemented: true
