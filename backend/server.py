@@ -646,20 +646,21 @@ IMPORTANTE:
             router_confidence=router_confidence
         )
         
-        # Incrementar contador de consultas (exceto plano avançado que é ilimitado)
-        plano_config = get_plano_config(current_user.plan)
-        if plano_config.consultas_mes is not None:  # Não é ilimitado
-            await db.users.update_one(
-                {"id": current_user.id},
-                {"$inc": {"consultas_mes_atual": 1}}
-            )
-        
-        # Legacy: também decrementar token_balance para compatibilidade
-        if current_user.plan == "gratuito":
-            await db.users.update_one(
-                {"id": current_user.id},
-                {"$inc": {"token_balance": -1}}
-            )
+        # Incrementar contador de consultas (exceto admin_master e plano avançado)
+        if not is_admin_master(current_user):
+            plano_config = get_plano_config(current_user.plan)
+            if plano_config.consultas_mes is not None:  # Não é ilimitado
+                await db.users.update_one(
+                    {"id": current_user.id},
+                    {"$inc": {"consultas_mes_atual": 1}}
+                )
+            
+            # Legacy: também decrementar token_balance para compatibilidade
+            if current_user.plan == "gratuito":
+                await db.users.update_one(
+                    {"id": current_user.id},
+                    {"$inc": {"token_balance": -1}}
+                )
         
         return ConsultationResponse(
             id=consultation_id,
