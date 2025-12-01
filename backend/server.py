@@ -650,7 +650,9 @@ async def create_consultation(
                         domain=consultation_req.domain,
                         question=consultation_req.question,
                         response=response_data,
-                        elapsed_time=elapsed_time,
+                        confidence=response_data.get("confianca", 85),
+                        tokens_used=len(str(response_data)) // 4,  # Rough estimate
+                        processing_time=round(elapsed_time / 1000, 2),
                         created_at=datetime.now(timezone.utc)
                     )
                 else:
