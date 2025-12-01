@@ -1093,11 +1093,11 @@ async def health_check():
 @api_router.get("/analytics/performance")
 async def get_performance_analytics(current_user: User = Depends(get_current_user)):
     """Retorna analytics do Meta-Núcleo"""
-    # Apenas para usuários plano avançado ou admin
-    if current_user.plan != "avancado":
+    # Apenas para usuários plano avançado ou admin master
+    if current_user.plan != "avancado" and not is_admin_master(current_user):
         raise HTTPException(
             status_code=403,
-            detail="Analytics disponível apenas no Plano Avançado"
+            detail="Analytics disponível apenas no Plano Avançado ou Administradores"
         )
     
     return meta_nucleo.get_dashboard_data()
