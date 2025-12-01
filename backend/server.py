@@ -577,6 +577,88 @@ async def create_consultation(
         if consultation_req.domain != dominio_sugerido and router_confidence > 80:
             logger.info(f"Router sugere {dominio_sugerido} (conf: {router_confidence}%), usuário selecionou {consultation_req.domain}")
         
+        # RAG: Tentar usar sistema RAG se disponível
+        if rag_system:
+            logger.info(f"🔍 Usando RAG para consulta em {consultation_req.domain}")
+            try:
+                rag_result = await rag_system.query_with_rag(
+                    domain=consultation_req.domain,
+                    question=consultation_req.question,
+                    top_k=5
+                )
+                
+                # Se RAG encontrou documentos relevantes, usar resposta do RAG
+                if rag_result.get("rag_enabled") and rag_result.get("document_count", 0) > 0:
+                    response_data = rag_result["response"]
+                    response_data["rag_used"] = True
+                    response_data["documents_found"] = rag_result["document_count"]
+                    
+                    # Prosseguir para salvar consulta
+                    elapsed_time = int((time.time() - start_time) * 1000)
+                    consultation_id = str(uuid.uuid4())
+                    
+                    # Salvar no banco
+                    await db.consultations.insert_one({
+                        "id": consultation_id,
+                        "user_id": current_user.id,
+                        "domain": consultation_req.domain,
+                        "question": consultation_req.question,
+                        "response": response_data,
+                        "elapsed_time": elapsed_time,
+                        "created_at": datetime.now(timezone.utc).isoformat(),
+                        "rag_enabled": True,
+                        "documents_found": rag_result["document_count"]
+                    })
+                    
+                    # Meta-núcleo: Registrar consulta RAG
+                    meta_nucleo.registrar_consulta(
+                        dominio=consultation_req.domain,
+                        pergunta=consultation_req.question,
+                        confianca=response_data.get("confianca", 85),
+                        tempo_resposta=elapsed_time / 1000,
+                        sucesso=True
+                    )
+                    
+                    # Incrementar contador (exceto admin)
+                    if not is_admin_master(current_user):
+                        plano_config = get_plano_config(current_user.plan)
+                        if plano_config.consultas_mes is not None:
+                            await db.users.update_one(
+                                {"id": current_user.id},
+                                {"$inc": {"consultas_mes_atual": 1}}
+                            )
+                        if current_user.plan == "gratuito":
+                            await db.users.update_one(
+                                {"id": current_user.id},
+                                {"$inc": {"token_balance": -1}}
+                            )
+                    
+                    # Armazenar consulta no Pinecone para aprendizado futuro
+                    try:
+                        await rag_system.store_consultation_feedback(
+                            domain=consultation_req.domain,
+                            consultation_id=consultation_id,
+                            question=consultation_req.question,
+                            response=str(response_data),
+                            user_id=current_user.id
+                        )
+                    except Exception as e:
+                        logger.error(f"Erro ao armazenar feedback no Pinecone: {str(e)}")
+                    
+                    return ConsultationResponse(
+                        id=consultation_id,
+                        domain=consultation_req.domain,
+                        question=consultation_req.question,
+                        response=response_data,
+                        elapsed_time=elapsed_time,
+                        created_at=datetime.now(timezone.utc)
+                    )
+                else:
+                    logger.info("RAG não encontrou documentos relevantes, usando geração padrão")
+            except Exception as e:
+                logger.error(f"Erro no RAG: {str(e)}, fallback para geração padrão")
+        
+        # Fallback: Geração sem RAG (método original)
         # Get OAB context if applicable
         oab_context = get_oab_context(consultation_req.domain)
         
