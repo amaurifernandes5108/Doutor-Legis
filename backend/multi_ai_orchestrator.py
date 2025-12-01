@@ -343,21 +343,46 @@ Analise a pergunta EXCLUSIVAMENTE sob a perspectiva JURISPRUDENCIAL:
 
 Responda APENAS com o JSON, sem texto adicional."""
 
-            response = await asyncio.to_thread(
-                model.generate_content,
-                prompt
+                    response = await asyncio.to_thread(
+                        model.generate_content,
+                        prompt
+                    )
+                    
+                    content = response.text
+                    result = self._extract_json_from_text(content)
+                    result["ia"] = "jurisprudencial"
+                    result["model"] = f"gemini-{model_name}"
+                    
+                    logger.info(f"✅ IA-3 Jurisprudencial respondeu ({model_name})")
+                    return result
+                    
+                except Exception as model_error:
+                    logger.warning(f"Gemini {model_name} falhou: {str(model_error)[:100]}")
+                    continue
+            
+            # Se todos os modelos Gemini falharam, tentar fallback GPT-4
+            logger.info("Gemini indisponível, usando GPT-4 como fallback")
+            from openai import AsyncOpenAI
+            
+            client = AsyncOpenAI(api_key=self.openai_key)
+            
+            response = await client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=2000,
+                response_format={"type": "json_object"}
             )
             
-            content = response.text
+            content = response.choices[0].message.content
             result = json.loads(content)
             result["ia"] = "jurisprudencial"
-            result["model"] = "gemini-2.0-flash"
+            result["model"] = "gpt-4o-mini-fallback"
             
-            logger.info("✅ IA-3 Jurisprudencial respondeu")
+            logger.info("✅ IA-3 Jurisprudencial respondeu (GPT-4 fallback)")
             return result
             
         except Exception as e:
-            logger.error(f"❌ IA-3 Jurisprudencial falhou: {str(e)}")
+            logger.error(f"❌ IA-3 Jurisprudencial falhou completamente: {str(e)}")
             return None
     
     async def _ia_doutrinaria(
