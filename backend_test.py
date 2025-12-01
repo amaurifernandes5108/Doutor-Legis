@@ -83,27 +83,28 @@ class DoutorLegisAPITester:
             return False
 
     def test_domains_endpoint(self):
-        """Test domains listing"""
+        """Test domains listing - ULTRA version with 13 domains"""
         success, response, status = self.make_request('GET', '/domains')
         
-        if success and status == 200 and isinstance(response, list) and len(response) == 8:
-            # Verify all 8 legal domains are present
+        if success and status == 200 and isinstance(response, list) and len(response) == 13:
+            # Verify all 13 ULTRA legal domains are present
             expected_domains = [
                 "constitucional", "civil", "consumidor", "imobiliario", 
-                "publico", "trabalhista", "empresarial", "internacional"
+                "publico", "trabalhista", "empresarial", "internacional",
+                "etica_advocacia_oab", "penal", "tributario", "previdenciario", "tecnologia"
             ]
             
             domain_ids = [d.get('id') for d in response]
             missing_domains = [d for d in expected_domains if d not in domain_ids]
             
             if not missing_domains:
-                self.log_test("Domains Listing", True, f"All 8 domains present", response)
+                self.log_test("ULTRA Domains Listing (13 núcleos)", True, f"All 13 ULTRA domains present", response)
                 return True
             else:
-                self.log_test("Domains Listing", False, f"Missing domains: {missing_domains}")
+                self.log_test("ULTRA Domains Listing (13 núcleos)", False, f"Missing domains: {missing_domains}")
                 return False
         else:
-            self.log_test("Domains Listing", False, f"Status: {status}, Response: {response}")
+            self.log_test("ULTRA Domains Listing (13 núcleos)", False, f"Status: {status}, Expected 13 domains, got {len(response) if isinstance(response, list) else 'invalid'}")
             return False
 
     def create_test_session(self):
