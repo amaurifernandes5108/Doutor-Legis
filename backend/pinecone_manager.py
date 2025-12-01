@@ -123,23 +123,28 @@ Namespaces disponíveis:
         
         return self.index
     
-    def delete_index(self, domain: str):
-        """Remove um índice Pinecone
+    def delete_index(self):
+        """Remove o índice único Pinecone"""
+        try:
+            self.pc.delete_index(self.index_name)
+            logger.info(f"Índice {self.index_name} removido")
+            self.index = None
+        except Exception as e:
+            logger.error(f"Erro ao remover índice: {str(e)}")
+            raise
+    
+    def delete_namespace(self, domain: str):
+        """Remove todos os vetores de um namespace (domínio)
         
         Args:
             domain: Nome do domínio jurídico
         """
-        index_name = f"{self.index_prefix}{domain}"
-        
         try:
-            self.pc.delete_index(index_name)
-            logger.info(f"Índice {index_name} removido")
-            
-            if domain in self.indexes:
-                del self.indexes[domain]
-                
+            index = self.get_index()
+            index.delete(delete_all=True, namespace=domain)
+            logger.info(f"Namespace {domain} limpo")
         except Exception as e:
-            logger.error(f"Erro ao remover índice {index_name}: {str(e)}")
+            logger.error(f"Erro ao limpar namespace {domain}: {str(e)}")
             raise
     
     def list_indexes(self) -> List[Dict[str, Any]]:
