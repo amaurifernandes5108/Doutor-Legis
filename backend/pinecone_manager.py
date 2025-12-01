@@ -156,21 +156,27 @@ Namespaces disponíveis:
             logger.error(f"Erro ao listar índices: {str(e)}")
             return []
     
-    def get_index_stats(self, domain: str) -> Dict[str, Any]:
-        """Obtém estatísticas de um índice
+    def get_index_stats(self, domain: str = None) -> Dict[str, Any]:
+        """Obtém estatísticas do índice (geral ou por namespace)
         
         Args:
-            domain: Nome do domínio jurídico
+            domain: Nome do domínio jurídico (opcional, None = stats gerais)
             
         Returns:
             Dict com estatísticas (vector_count, dimension, etc)
         """
         try:
-            index = self.get_index(domain)
+            index = self.get_index()
             stats = index.describe_index_stats()
+            
+            if domain:
+                # Retornar stats específicas do namespace
+                namespaces = stats.get('namespaces', {})
+                return namespaces.get(domain, {"vector_count": 0})
+            
             return stats
         except Exception as e:
-            logger.error(f"Erro ao obter stats de {domain}: {str(e)}")
+            logger.error(f"Erro ao obter stats: {str(e)}")
             return {}
     
     def upsert_vectors(
