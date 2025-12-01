@@ -37,6 +37,11 @@ from router_inteligente import classificar_pergunta, sugerir_dominios
 from meta_nucleo import meta_nucleo
 from nucleos_especializados import get_prompt_nucleo
 
+# Pinecone RAG imports
+from pinecone_manager import PineconeManager
+from document_processor import EmbeddingGenerator
+from rag_system import RAGSystem
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env', override=False)
 
@@ -44,6 +49,23 @@ load_dotenv(ROOT_DIR / '.env', override=False)
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
+
+# Pinecone RAG System initialization
+pinecone_api_key = os.getenv("PINECONE_API_KEY")
+openai_api_key = os.getenv("OPENAI_API_KEY")
+rag_system = None
+
+if pinecone_api_key and openai_api_key:
+    try:
+        pinecone_manager = PineconeManager(api_key=pinecone_api_key)
+        embedding_generator = EmbeddingGenerator(openai_api_key=openai_api_key)
+        rag_system = RAGSystem(pinecone_manager, embedding_generator, openai_api_key)
+        logging.info("✅ Sistema RAG Pinecone inicializado")
+    except Exception as e:
+        logging.warning(f"⚠️  RAG System não inicializado: {str(e)}")
+        rag_system = None
+else:
+    logging.warning("⚠️  Credenciais Pinecone/OpenAI não encontradas - RAG desativado")
 
 # Rate limiting
 limiter = Limiter(key_func=get_remote_address)
