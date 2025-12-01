@@ -374,10 +374,17 @@ async def process_session(request: Request, response: Response, session_id: str 
         
         if existing_user:
             user_id = existing_user["id"]
-            # Don't update existing user data
+            # Se for fundador e ainda não tem role admin, atualizar
+            if is_founder_email(user_data["email"]) and existing_user.get("role") != "admin_master":
+                await db.users.update_one(
+                    {"id": user_id},
+                    {"$set": {"role": "admin_master"}}
+                )
         else:
             # Create new user
             user_id = str(uuid.uuid4())
+            # Verificar se é fundador
+            role = "admin_master" if is_founder_email(user_data["email"]) else "user"
             new_user = User(
                 id=user_id,
                 email=user_data["email"],
@@ -385,6 +392,7 @@ async def process_session(request: Request, response: Response, session_id: str 
                 picture=user_data.get("picture"),
                 google_id=user_data.get("id"),
                 plan="gratuito",
+                role=role,
                 token_balance=3
             )
             user_dict = new_user.model_dump()
