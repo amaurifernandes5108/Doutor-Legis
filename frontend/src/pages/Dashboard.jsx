@@ -413,7 +413,24 @@ function Dashboard({ user, setUser }) {
             <div className="panel-section">
               <h3>Seu Plano</h3>
               <div className="plan-card">
-                {user.plan === "premium" ? (
+                {adminStatus?.is_admin_master ? (
+                  <>
+                    <div className="plan-badge admin-master">
+                      <Crown size={20} style={{ color: '#D4AF37' }} />
+                      <span>Administrador Master</span>
+                    </div>
+                    <div className="admin-privileges">
+                      <div className="privilege-item">✓ Consultas ILIMITADAS</div>
+                      <div className="privilege-item">✓ PDFs ILIMITADOS</div>
+                      <div className="privilege-item">✓ 13 Domínios ULTRA</div>
+                      <div className="privilege-item">✓ Analytics Completo</div>
+                      <div className="privilege-item">✓ Histórico Permanente</div>
+                    </div>
+                    <p className="admin-message">
+                      🌟 Acesso Pleno ao Doutor Legis 2.0 ULTRA
+                    </p>
+                  </>
+                ) : user.plan === "premium" ? (
                   <>
                     <div className="plan-badge premium">
                       <Crown size={20} />
