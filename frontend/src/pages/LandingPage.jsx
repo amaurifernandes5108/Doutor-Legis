@@ -148,7 +148,7 @@ function LandingPage() {
               <ul>
                 <li>✓ 150 consultas/mês</li>
                 <li>✓ 25 PDFs/mês</li>
-                <li>✓ 9 domínios (TODOS)</li>
+                <li>✓ 13 núcleos ULTRA (TODOS)</li>
                 <li>✓ PDF profissional + Word</li>
                 <li>✓ Dashboard avançado</li>
                 <li>✓ Suporte email (24h)</li>
