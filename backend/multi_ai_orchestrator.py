@@ -434,22 +434,57 @@ Analise a pergunta EXCLUSIVAMENTE sob a perspectiva DOUTRINÁRIA:
 
 Responda APENAS com o JSON, sem texto adicional."""
 
-            response = await client.chat.completions.create(
-                model="llama-3.1-sonar-large-128k-online",
+            # Modelos válidos da Perplexity
+            models_to_try = [
+                "sonar-pro",
+                "sonar",
+                "llama-3.1-sonar-huge-128k-online"
+            ]
+            
+            result = None
+            for model_name in models_to_try:
+                try:
+                    response = await client.chat.completions.create(
+                        model=model_name,
+                        messages=[{"role": "user", "content": prompt}],
+                        max_tokens=2000
+                    )
+                    
+                    content = response.choices[0].message.content
+                    result = self._extract_json_from_text(content)
+                    result["ia"] = "doutrinaria"
+                    result["model"] = f"perplexity-{model_name}"
+                    
+                    logger.info(f"✅ IA-4 Doutrinária respondeu ({model_name})")
+                    return result
+                    
+                except Exception as model_error:
+                    logger.warning(f"Perplexity {model_name} falhou: {str(model_error)[:100]}")
+                    continue
+            
+            # Se Perplexity falhou, usar GPT-4 como fallback
+            logger.info("Perplexity indisponível, usando GPT-4 como fallback")
+            from openai import AsyncOpenAI
+            
+            fallback_client = AsyncOpenAI(api_key=self.openai_key)
+            
+            response = await fallback_client.chat.completions.create(
+                model="gpt-4o-mini",
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=2000
+                max_tokens=2000,
+                response_format={"type": "json_object"}
             )
             
             content = response.choices[0].message.content
             result = json.loads(content)
             result["ia"] = "doutrinaria"
-            result["model"] = "perplexity-sonar"
+            result["model"] = "gpt-4o-mini-fallback"
             
-            logger.info("✅ IA-4 Doutrinária respondeu")
+            logger.info("✅ IA-4 Doutrinária respondeu (GPT-4 fallback)")
             return result
             
         except Exception as e:
-            logger.error(f"❌ IA-4 Doutrinária falhou: {str(e)}")
+            logger.error(f"❌ IA-4 Doutrinária falhou completamente: {str(e)}")
             return None
     
     async def _ia_metodologica(
