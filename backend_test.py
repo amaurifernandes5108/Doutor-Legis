@@ -312,6 +312,239 @@ class DoutorLegisAPITester:
             self.log_test("Google Login Endpoint", False, f"Status: {status}, Response: {response}")
             return False
 
+    def create_admin_master_session(self):
+        """Create session for admin master founder (amaurifernandes1975@gmail.com)"""
+        try:
+            import pymongo
+            from pymongo import MongoClient
+            import uuid
+            from datetime import datetime, timezone, timedelta
+            
+            # Connect to MongoDB
+            client = MongoClient("mongodb://localhost:27017")
+            db = client["doutor_legis_db"]
+            
+            # Check if founder user exists
+            founder_user = db.users.find_one({"email": "amaurifernandes1975@gmail.com"})
+            if not founder_user:
+                print("❌ Founder user not found in database")
+                return False
+            
+            # Create admin session
+            self.admin_user_id = founder_user["id"]
+            self.admin_session_token = f"admin_test_session_{int(time.time())}"
+            
+            # Insert admin session
+            admin_session_doc = {
+                "user_id": self.admin_user_id,
+                "session_token": self.admin_session_token,
+                "expires_at": (datetime.now(timezone.utc) + timedelta(days=7)).isoformat(),
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            db.user_sessions.insert_one(admin_session_doc)
+            
+            print(f"✅ Created admin master session for: {founder_user['email']}")
+            print(f"✅ Admin role: {founder_user.get('role', 'not set')}")
+            return True
+            
+        except Exception as e:
+            print(f"❌ Failed to create admin session: {str(e)}")
+            return False
+
+    def test_router_inteligente(self):
+        """Test Router Inteligente classification"""
+        test_data = {
+            "pergunta": "Quais são as prerrogativas do advogado segundo a OAB?"
+        }
+        
+        success, response, status = self.make_request('POST', '/domains/classificar', test_data)
+        
+        if success and status == 200 and isinstance(response, dict):
+            required_fields = ['dominio_sugerido', 'confianca', 'detalhes', 'sugestoes_alternativas']
+            missing_fields = [f for f in required_fields if f not in response]
+            
+            if not missing_fields:
+                # Should classify OAB question correctly
+                if response.get('dominio_sugerido') == 'etica_advocacia_oab':
+                    self.log_test("Router Inteligente Classification", True, f"Correctly classified OAB question", response)
+                    return True
+                else:
+                    self.log_test("Router Inteligente Classification", False, f"Wrong classification: {response.get('dominio_sugerido')}")
+                    return False
+            else:
+                self.log_test("Router Inteligente Classification", False, f"Missing fields: {missing_fields}")
+                return False
+        else:
+            self.log_test("Router Inteligente Classification", False, f"Status: {status}, Response: {response}")
+            return False
+
+    def test_admin_status_endpoint(self):
+        """Test admin status endpoint for founder"""
+        if not hasattr(self, 'admin_session_token'):
+            self.log_test("Admin Status Check", False, "No admin session available")
+            return False
+        
+        # Temporarily switch to admin token
+        original_token = self.session_token
+        self.session_token = self.admin_session_token
+        
+        success, response, status = self.make_request('GET', '/auth/admin-status')
+        
+        # Restore original token
+        self.session_token = original_token
+        
+        if success and status == 200 and isinstance(response, dict):
+            required_fields = ['is_admin_master', 'role', 'email', 'privilegios']
+            missing_fields = [f for f in required_fields if f not in response]
+            
+            if not missing_fields and response.get('is_admin_master') == True:
+                self.log_test("Admin Status Check", True, f"Admin master status confirmed", response)
+                return True
+            else:
+                self.log_test("Admin Status Check", False, f"Not admin master or missing fields: {missing_fields}")
+                return False
+        else:
+            self.log_test("Admin Status Check", False, f"Status: {status}, Response: {response}")
+            return False
+
+    def test_admin_plano_endpoint(self):
+        """Test admin plano endpoint for founder"""
+        if not hasattr(self, 'admin_session_token'):
+            self.log_test("Admin Plano Check", False, "No admin session available")
+            return False
+        
+        # Temporarily switch to admin token
+        original_token = self.session_token
+        self.session_token = self.admin_session_token
+        
+        success, response, status = self.make_request('GET', '/planos/meu-plano')
+        
+        # Restore original token
+        self.session_token = original_token
+        
+        if success and status == 200 and isinstance(response, dict):
+            if response.get('admin_master') == True and 'privilegios' in response:
+                privilegios = response['privilegios']
+                expected_privileges = ['consultas', 'pdfs', 'dominios', 'historico', 'analytics']
+                
+                if all(priv in privilegios for priv in expected_privileges):
+                    self.log_test("Admin Plano Check", True, f"Admin privileges confirmed", response)
+                    return True
+                else:
+                    self.log_test("Admin Plano Check", False, f"Missing admin privileges")
+                    return False
+            else:
+                self.log_test("Admin Plano Check", False, f"Not admin master response")
+                return False
+        else:
+            self.log_test("Admin Plano Check", False, f"Status: {status}, Response: {response}")
+            return False
+
+    def test_planos_todos_endpoint(self):
+        """Test all plans listing"""
+        success, response, status = self.make_request('GET', '/planos/todos')
+        
+        if success and status == 200 and isinstance(response, dict):
+            planos = response.get('planos', [])
+            if len(planos) == 4:
+                # Check that intermediario and avancado have 13 domains
+                intermediario = next((p for p in planos if p['id'] == 'intermediario'), None)
+                avancado = next((p for p in planos if p['id'] == 'avancado'), None)
+                
+                if intermediario and avancado:
+                    if intermediario.get('dominios_disponiveis') == 13 and avancado.get('dominios_disponiveis') == 13:
+                        self.log_test("Planos Listing (4 plans)", True, f"All 4 plans with correct domains", response)
+                        return True
+                    else:
+                        self.log_test("Planos Listing (4 plans)", False, f"Wrong domain count for advanced plans")
+                        return False
+                else:
+                    self.log_test("Planos Listing (4 plans)", False, f"Missing intermediario or avancado plans")
+                    return False
+            else:
+                self.log_test("Planos Listing (4 plans)", False, f"Expected 4 plans, got {len(planos)}")
+                return False
+        else:
+            self.log_test("Planos Listing (4 plans)", False, f"Status: {status}, Response: {response}")
+            return False
+
+    def test_admin_consultation_bypass(self):
+        """Test admin master consultation without limits"""
+        if not hasattr(self, 'admin_session_token'):
+            self.log_test("Admin Consultation Bypass", False, "No admin session available")
+            return False
+        
+        # Temporarily switch to admin token
+        original_token = self.session_token
+        self.session_token = self.admin_session_token
+        
+        consultation_data = {
+            "domain": "etica_advocacia_oab",
+            "question": "Quais são as principais prerrogativas do advogado no exercício da profissão?"
+        }
+        
+        success, response, status = self.make_request('POST', '/consultation', consultation_data)
+        
+        # Restore original token
+        self.session_token = original_token
+        
+        if success and status == 200 and isinstance(response, dict):
+            required_fields = ['id', 'domain', 'question', 'response', 'confidence']
+            missing_fields = [f for f in required_fields if f not in response]
+            
+            if not missing_fields:
+                # Verify response structure (8 sections)
+                response_content = response.get('response', {})
+                expected_sections = [
+                    'resumo', 'legislacao_aplicavel', 'jurisprudencia', 
+                    'analise_legal', 'riscos_juridicos', 'recomendacoes', 
+                    'proximos_passos', 'confianca'
+                ]
+                
+                missing_sections = [s for s in expected_sections if s not in response_content]
+                
+                if not missing_sections:
+                    self.log_test("Admin Consultation Bypass", True, f"Admin consultation successful with structured response", response)
+                    return response['id']  # Return consultation ID
+                else:
+                    self.log_test("Admin Consultation Bypass", False, f"Missing response sections: {missing_sections}")
+                    return False
+            else:
+                self.log_test("Admin Consultation Bypass", False, f"Missing fields: {missing_fields}")
+                return False
+        else:
+            self.log_test("Admin Consultation Bypass", False, f"Status: {status}, Response: {response}")
+            return False
+
+    def test_analytics_endpoint(self):
+        """Test analytics endpoint (admin only)"""
+        if not hasattr(self, 'admin_session_token'):
+            self.log_test("Analytics Access", False, "No admin session available")
+            return False
+        
+        # Temporarily switch to admin token
+        original_token = self.session_token
+        self.session_token = self.admin_session_token
+        
+        success, response, status = self.make_request('GET', '/analytics/performance')
+        
+        # Restore original token
+        self.session_token = original_token
+        
+        if success and status == 200 and isinstance(response, dict):
+            required_fields = ['analise', 'sugestoes', 'ultima_atualizacao']
+            missing_fields = [f for f in required_fields if f not in response]
+            
+            if not missing_fields:
+                self.log_test("Analytics Access", True, f"Analytics data retrieved", response)
+                return True
+            else:
+                self.log_test("Analytics Access", False, f"Missing fields: {missing_fields}")
+                return False
+        else:
+            self.log_test("Analytics Access", False, f"Status: {status}, Response: {response}")
+            return False
+
     def cleanup_test_data(self):
         """Clean up test data from database"""
         try:
@@ -327,6 +560,11 @@ class DoutorLegisAPITester:
                 db.user_sessions.delete_many({"user_id": self.user_id})
                 db.consultations.delete_many({"user_id": self.user_id})
                 print(f"✅ Cleaned up test data for user: {self.user_id}")
+            
+            # Remove admin test session (but keep the user)
+            if hasattr(self, 'admin_session_token'):
+                db.user_sessions.delete_many({"session_token": self.admin_session_token})
+                print(f"✅ Cleaned up admin test session")
             
         except Exception as e:
             print(f"⚠️ Failed to cleanup test data: {str(e)}")
