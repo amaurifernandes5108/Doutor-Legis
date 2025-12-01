@@ -224,19 +224,13 @@ backend:
 metadata:
   created_by: "main_agent"
   version: "1.0"
-  test_sequence: 1
+  test_sequence: 2
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "Sistema de Role Administrador Master Fundador"
-    - "Arquitetura ULTRA - 13 Núcleos Jurídicos"
-    - "Router Inteligente"
-    - "Endpoint /api/auth/admin-status"
-    - "Endpoint /api/planos/meu-plano com privilégios admin"
-    - "Endpoint /api/consultation com bypass de limites"
+  current_focus: []
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
