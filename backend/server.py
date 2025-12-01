@@ -162,63 +162,118 @@ DOMAINS = [
         "name": "Direito Constitucional",
         "legislation": "Constituição Federal de 1988",
         "court": "STF (Supremo Tribunal Federal)",
-        "accuracy": 95
+        "accuracy": 95,
+        "nucleo": 1,
+        "expertise": "Direitos fundamentais, Controle de constitucionalidade, ADI/ADC/ADPF"
     },
     {
         "id": "civil",
         "name": "Direito Civil",
-        "legislation": "Código Civil (Lei 10.406/2002)",
+        "legislation": "Código Civil (Lei 10.406/2002), CPC/2015",
         "court": "STJ (Superior Tribunal de Justiça)",
-        "accuracy": 92
+        "accuracy": 92,
+        "nucleo": 2,
+        "expertise": "Contratos, Responsabilidade civil, Família, Sucessões"
     },
     {
         "id": "consumidor",
         "name": "Direito do Consumidor",
-        "legislation": "CDC (Lei 8.078/1990)",
+        "legislation": "CDC (Lei 8.078/1990), Lei 14.933/2024",
         "court": "STJ, PROCON",
-        "accuracy": 93
+        "accuracy": 93,
+        "nucleo": 3,
+        "expertise": "Relação consumidor-fornecedor, Cláusulas abusivas, Garantias"
     },
     {
         "id": "imobiliario",
         "name": "Direito Imobiliário",
-        "legislation": "Lei de Locações, Código Civil",
+        "legislation": "Lei 8.245/91 (Locações), Lei 6.015/73 (Registros)",
         "court": "Tribunais de Justiça Estaduais",
-        "accuracy": 89
+        "accuracy": 89,
+        "nucleo": 4,
+        "expertise": "Locação, Compra e venda, Registro, Condomínio"
     },
     {
         "id": "publico",
-        "name": "Direito Público/Licenças",
-        "legislation": "Lei de Licitações (14.133/2021)",
-        "court": "TJ, TRF",
-        "accuracy": 88
+        "name": "Direito Público/Licitações",
+        "legislation": "Lei 14.133/21, Lei 8.666/93",
+        "court": "TCU, TJ, TRF",
+        "accuracy": 88,
+        "nucleo": 5,
+        "expertise": "Licitações, Contratos públicos, Improbidade administrativa"
     },
     {
         "id": "trabalhista",
         "name": "Direito Trabalhista",
-        "legislation": "CLT (Consolidação das Leis do Trabalho)",
+        "legislation": "CLT, Lei 8.213/91 (Benefícios)",
         "court": "TST (Tribunal Superior do Trabalho)",
-        "accuracy": 91
+        "accuracy": 91,
+        "nucleo": 6,
+        "expertise": "Rescisão, FGTS, Horas extras, Direitos coletivos"
     },
     {
         "id": "empresarial",
         "name": "Direito Empresarial",
-        "legislation": "Lei das S.A. (6.404/76), Código Civil",
+        "legislation": "Lei 6.404/76 (S.A.), LGPD, Lei Anticorrupção",
         "court": "STJ, Tribunais Estaduais",
-        "accuracy": 90
+        "accuracy": 90,
+        "nucleo": 7,
+        "expertise": "Sociedades, LGPD, Compliance, M&A"
     },
     {
         "id": "internacional",
         "name": "Direito Internacional",
-        "legislation": "Tratados Internacionais, Convenções",
+        "legislation": "Tratados Internacionais, UNCITRAL",
         "court": "STJ, TRF, Cortes Internacionais",
-        "accuracy": 87
+        "accuracy": 87,
+        "nucleo": 8,
+        "expertise": "Contratos cross-border, Arbitragem, Tratados"
     },
     {
         "id": "etica_advocacia_oab",
         "name": "Ética e Advocacia OAB",
         "legislation": "Estatuto OAB (Lei 8.906/94), Código Ética (Res. 02/2015), Prov. 205/2021",
         "court": "Tribunais de Ética e Disciplina OAB, Conselhos Seccionais",
-        "accuracy": 97
+        "accuracy": 97,
+        "nucleo": 9,
+        "expertise": "Prerrogativas, Ética profissional, Publicidade, Procedimento disciplinar"
+    },
+    # ⭐ NOVOS DOMÍNIOS - ULTRA
+    {
+        "id": "penal",
+        "name": "Direito Penal",
+        "legislation": "Código Penal, CPP, Lei de Execução Penal",
+        "court": "STF, STJ, Tribunais de Justiça",
+        "accuracy": 97,
+        "nucleo": 10,
+        "expertise": "Crimes, Processo penal, Execução, Júri, Defesa criminal"
+    },
+    {
+        "id": "tributario",
+        "name": "Direito Tributário",
+        "legislation": "CTN, CF/88, Leis tributárias (IR, ICMS, ISS, PIS/COFINS)",
+        "court": "STF, STJ, CARF",
+        "accuracy": 98,
+        "nucleo": 11,
+        "expertise": "Impostos, Processo administrativo, Planejamento tributário, CARF"
+    },
+    {
+        "id": "previdenciario",
+        "name": "Direito Previdenciário",
+        "legislation": "Lei 8.213/91, Lei 8.212/91, Lei 14.331/22",
+        "court": "STJ, TRF, JEF",
+        "accuracy": 99,
+        "nucleo": 12,
+        "expertise": "Aposentadoria, Pensão, Auxílio-doença, INSS, Revisão"
+    },
+    {
+        "id": "tecnologia",
+        "name": "Direito da Tecnologia",
+        "legislation": "LGPD, Marco Civil, Lei 14.155/21 (E-commerce)",
+        "court": "STJ, Tribunais Estaduais",
+        "accuracy": 95,
+        "nucleo": 13,
+        "expertise": "IA, Criptomoedas, Blockchain, Crimes digitais, Propriedade intelectual digital"
     }
 ]
 
