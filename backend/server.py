@@ -50,17 +50,31 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# Pinecone RAG System initialization
+# Pinecone RAG System initialization with Multi-AI support
 pinecone_api_key = os.getenv("PINECONE_API_KEY")
 openai_api_key = os.getenv("OPENAI_API_KEY")
+claude_api_key = os.getenv("CLAUDE_API_KEY")
+google_api_key = os.getenv("GOOGLE_AI_STUDIO_KEY")
+perplexity_api_key = os.getenv("PERPLEXITY_API_KEY")
 rag_system = None
 
 if pinecone_api_key and openai_api_key:
     try:
         pinecone_manager = PineconeManager(api_key=pinecone_api_key)
         embedding_generator = EmbeddingGenerator(openai_api_key=openai_api_key)
-        rag_system = RAGSystem(pinecone_manager, embedding_generator, openai_api_key)
+        rag_system = RAGSystem(
+            pinecone_manager=pinecone_manager,
+            embedding_generator=embedding_generator,
+            openai_api_key=openai_api_key,
+            claude_api_key=claude_api_key,
+            google_api_key=google_api_key,
+            perplexity_api_key=perplexity_api_key
+        )
         logging.info("✅ Sistema RAG Pinecone inicializado")
+        if claude_api_key and google_api_key and perplexity_api_key:
+            logging.info("✅ Multi-AI Real ativado (Claude + GPT-4 + Gemini + Perplexity)")
+        else:
+            logging.info("⚠️ Multi-AI desativado - usando Single-LLM (faltam keys)")
     except Exception as e:
         logging.warning(f"⚠️  RAG System não inicializado: {str(e)}")
         rag_system = None
