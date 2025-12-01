@@ -765,7 +765,29 @@ async def meu_plano_atual(current_user: User = Depends(get_current_user)):
     if not plano_config:
         raise HTTPException(status_code=404, detail="Configuração de plano não encontrada")
     
-    # Verificar limites
+    # Admin Master tem privilégios especiais
+    if is_admin_master(current_user):
+        return {
+            "usuario": {
+                "id": current_user.id,
+                "nome": current_user.name,
+                "email": current_user.email,
+                "plano": current_user.plan,
+                "role": "admin_master"
+            },
+            "admin_master": True,
+            "privilegios": {
+                "consultas": "ILIMITADAS",
+                "pdfs": "ILIMITADOS",
+                "dominios": "TODOS (13 núcleos)",
+                "historico": "PERMANENTE",
+                "analytics": "ACESSO COMPLETO",
+                "suporte": "PRIORIDADE MÁXIMA"
+            },
+            "mensagem": "🌟 Administrador Master Fundador - Acesso Pleno ao Doutor Legis 2.0 ULTRA"
+        }
+    
+    # Verificar limites para usuários normais
     limite_consultas = verificar_limite_consultas(current_user.plan, current_user.consultas_mes_atual)
     limite_pdfs = verificar_limite_pdfs(current_user.plan, current_user.pdfs_mes_atual)
     
