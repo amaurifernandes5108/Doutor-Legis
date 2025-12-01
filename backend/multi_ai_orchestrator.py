@@ -113,6 +113,43 @@ class MultiAIOrchestrator:
             "elapsed_time": elapsed
         }
     
+    def _extract_json_from_text(self, text: str) -> Dict[str, Any]:
+        """Extrai JSON de texto que pode conter Markdown ou outros caracteres"""
+        import re
+        
+        # Tentar parsear direto
+        try:
+            return json.loads(text)
+        except:
+            pass
+        
+        # Tentar extrair JSON de code block
+        json_pattern = r'```(?:json)?\s*(\{.*?\})\s*```'
+        match = re.search(json_pattern, text, re.DOTALL)
+        if match:
+            try:
+                return json.loads(match.group(1))
+            except:
+                pass
+        
+        # Tentar encontrar JSON em qualquer lugar do texto
+        json_pattern = r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}'
+        matches = re.findall(json_pattern, text, re.DOTALL)
+        for match in matches:
+            try:
+                result = json.loads(match)
+                if isinstance(result, dict) and 'sintese' in result:
+                    return result
+            except:
+                continue
+        
+        # Fallback: criar JSON mínimo do texto
+        return {
+            "sintese": text[:200] + "..." if len(text) > 200 else text,
+            "conclusao": "Análise disponível no texto completo",
+            "confianca": 70
+        }
+    
     async def _ia_constitucional(
         self,
         question: str,
