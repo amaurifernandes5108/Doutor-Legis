@@ -166,6 +166,7 @@ class BrazilianLegalChunker:
                 "text": chunk_text,
                 "metadata": {
                     **metadata,
+                    "text": chunk_text,  # Adicionar texto no metadata
                     "chunk_index": i,
                     "document_type": "consultation"
                 }
