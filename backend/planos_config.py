@@ -126,7 +126,7 @@ PLANOS = {
         features=[
             "150 consultas jurídicas por mês",
             "25 exportações PDF por mês",
-            "9 domínios jurídicos (todos)",
+            "13 domínios jurídicos (todos os núcleos ULTRA)",
             "PDF profissional",
             "Exportação Word",
             "Dashboard avançado",
