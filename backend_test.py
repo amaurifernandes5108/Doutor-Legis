@@ -570,23 +570,45 @@ class DoutorLegisAPITester:
             print(f"⚠️ Failed to cleanup test data: {str(e)}")
 
     def run_all_tests(self):
-        """Run all backend tests"""
-        print("🚀 Starting Doutor Legis 2.0 Backend API Tests")
+        """Run all backend tests - ULTRA version"""
+        print("🚀 Starting Doutor Legis 2.0 ULTRA Backend API Tests")
         print("=" * 60)
         
         # Basic connectivity tests
-        print("\n📡 Testing Basic Connectivity...")
+        print("\n📡 Testing Basic Connectivity & ULTRA Features...")
         self.test_health_check()
         self.test_domains_endpoint()
         self.test_google_login_endpoint()
         
-        # Authentication tests
-        print("\n🔐 Testing Authentication...")
+        # ULTRA Router Inteligente
+        print("\n🧠 Testing Router Inteligente...")
+        self.test_router_inteligente()
+        
+        # Plans system
+        print("\n📋 Testing Plans System...")
+        self.test_planos_todos_endpoint()
+        
+        # Admin Master tests
+        print("\n👑 Testing Admin Master System...")
+        if self.create_admin_master_session():
+            self.test_admin_status_endpoint()
+            self.test_admin_plano_endpoint()
+            
+            # Admin consultation test
+            print("\n⚖️ Testing Admin Master Consultation...")
+            admin_consultation_id = self.test_admin_consultation_bypass()
+            
+            # Analytics test
+            print("\n📊 Testing Analytics (Admin Only)...")
+            self.test_analytics_endpoint()
+        
+        # Regular user authentication tests
+        print("\n🔐 Testing Regular User Authentication...")
         if self.create_test_session():
             self.test_auth_me()
             
             # Protected endpoint tests
-            print("\n⚖️ Testing Legal Consultation System...")
+            print("\n⚖️ Testing Regular User Consultation System...")
             consultation_id = self.test_consultation_creation()
             if consultation_id:
                 self.test_consultation_retrieval(consultation_id)
@@ -596,11 +618,6 @@ class DoutorLegisAPITester:
             print("\n💳 Testing Payment System...")
             self.test_payment_checkout()
             
-            # Rate limiting test
-            print("\n🚦 Testing Rate Limiting...")
-            # Skip rate limiting test to avoid delays
-            # self.test_rate_limiting()
-            
             # Cleanup
             self.cleanup_test_data()
         
@@ -609,7 +626,7 @@ class DoutorLegisAPITester:
         print(f"📊 Test Summary: {self.tests_passed}/{self.tests_run} tests passed")
         
         if self.tests_passed == self.tests_run:
-            print("🎉 All tests passed!")
+            print("🎉 All ULTRA tests passed!")
             return 0
         else:
             print("❌ Some tests failed. Check the details above.")
