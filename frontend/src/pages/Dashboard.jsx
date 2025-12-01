@@ -17,11 +17,13 @@ function Dashboard({ user, setUser }) {
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [adminStatus, setAdminStatus] = useState(null);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
     fetchDomains();
     fetchHistory();
+    fetchAdminStatus();
   }, []);
 
   useEffect(() => {
