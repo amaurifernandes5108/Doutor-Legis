@@ -83,6 +83,7 @@ class BrazilianLegalChunker:
                 "text": chunk_text,
                 "metadata": {
                     **metadata,
+                    "text": chunk_text,  # Adicionar texto no metadata para recuperação
                     "chunk_index": i,
                     "chunk_total": len(chunks),
                     "document_type": "legislation",
