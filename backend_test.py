@@ -353,11 +353,11 @@ class DoutorLegisAPITester:
 
     def test_router_inteligente(self):
         """Test Router Inteligente classification"""
-        test_data = {
-            "pergunta": "Quais são as prerrogativas do advogado segundo a OAB?"
-        }
+        # Router expects query parameter, not JSON body
+        pergunta = "Quais são as prerrogativas do advogado segundo a OAB?"
+        endpoint = f'/domains/classificar?pergunta={pergunta}'
         
-        success, response, status = self.make_request('POST', '/domains/classificar', test_data)
+        success, response, status = self.make_request('POST', endpoint)
         
         if success and status == 200 and isinstance(response, dict):
             required_fields = ['dominio_sugerido', 'confianca', 'detalhes', 'sugestoes_alternativas']
