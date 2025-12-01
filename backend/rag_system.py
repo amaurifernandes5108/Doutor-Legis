@@ -4,6 +4,7 @@ Integra busca semântica com Pinecone e geração com LLM
 
 from typing import List, Dict, Any, Optional
 import logging
+from datetime import datetime
 from pinecone_manager import PineconeManager
 from document_processor import EmbeddingGenerator
 from emergentintegrations.llm.chat import LlmChat, UserMessage
