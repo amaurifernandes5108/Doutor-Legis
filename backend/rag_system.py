@@ -12,24 +12,50 @@ from emergentintegrations.llm.chat import LlmChat, UserMessage
 logger = logging.getLogger(__name__)
 
 class RAGSystem:
-    """Sistema completo de Retrieval-Augmented Generation"""
+    """Sistema completo de Retrieval-Augmented Generation com Multi-AI"""
     
     def __init__(
         self,
         pinecone_manager: PineconeManager,
         embedding_generator: EmbeddingGenerator,
-        openai_api_key: str
+        openai_api_key: str,
+        claude_api_key: str = None,
+        google_api_key: str = None,
+        perplexity_api_key: str = None
     ):
-        """Inicializa sistema RAG
+        """Inicializa sistema RAG com suporte Multi-AI
         
         Args:
             pinecone_manager: Gerenciador Pinecone
             embedding_generator: Gerador de embeddings
-            openai_api_key: OpenAI API Key para LLM
+            openai_api_key: OpenAI API Key
+            claude_api_key: Claude API Key (opcional, para Multi-AI)
+            google_api_key: Google AI Studio Key (opcional, para Multi-AI)
+            perplexity_api_key: Perplexity Key (opcional, para Multi-AI)
         """
         self.pinecone = pinecone_manager
         self.embedder = embedding_generator
         self.openai_api_key = openai_api_key
+        
+        # Multi-AI orchestrator (se todas as keys estiverem disponíveis)
+        self.multi_ai_enabled = all([
+            claude_api_key,
+            google_api_key,
+            perplexity_api_key
+        ])
+        
+        if self.multi_ai_enabled:
+            from multi_ai_orchestrator import MultiAIOrchestrator
+            self.orchestrator = MultiAIOrchestrator(
+                openai_key=openai_api_key,
+                claude_key=claude_api_key,
+                google_key=google_api_key,
+                perplexity_key=perplexity_api_key
+            )
+            logger.info("✅ Multi-AI Orchestrator ativado (5 IAs paralelas)")
+        else:
+            self.orchestrator = None
+            logger.info("⚠️ Multi-AI desativado (keys insuficientes). Usando modo single-LLM.")
     
     async def query_with_rag(
         self,
