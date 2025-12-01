@@ -536,19 +536,34 @@ Analise a pergunta EXCLUSIVAMENTE sob a perspectiva METODOLÓGICA:
 
 Responda APENAS com o JSON, sem texto adicional."""
 
-            response = await client.messages.create(
-                model="claude-opus-4-20250514",
-                max_tokens=2000,
-                messages=[{"role": "user", "content": prompt}]
-            )
+            # Tentar Claude Opus, senão usar Sonnet
+            models_to_try = [
+                ("claude-opus-4-20250514", "claude-opus-4"),
+                ("claude-sonnet-4-20250514", "claude-sonnet-4")
+            ]
             
-            content = response.content[0].text
-            result = json.loads(content)
-            result["ia"] = "metodologica"
-            result["model"] = "claude-opus-4"
+            for model_id, model_name in models_to_try:
+                try:
+                    response = await client.messages.create(
+                        model=model_id,
+                        max_tokens=2000,
+                        messages=[{"role": "user", "content": prompt}]
+                    )
+                    
+                    content = response.content[0].text
+                    result = self._extract_json_from_text(content)
+                    result["ia"] = "metodologica"
+                    result["model"] = model_name
+                    
+                    logger.info(f"✅ IA-5 Metodológica respondeu ({model_name})")
+                    return result
+                    
+                except Exception as model_error:
+                    logger.warning(f"Claude {model_name} falhou: {str(model_error)[:100]}")
+                    continue
             
-            logger.info("✅ IA-5 Metodológica respondeu")
-            return result
+            logger.error("❌ IA-5 Metodológica falhou com todos os modelos Claude")
+            return None
             
         except Exception as e:
             logger.error(f"❌ IA-5 Metodológica falhou: {str(e)}")
