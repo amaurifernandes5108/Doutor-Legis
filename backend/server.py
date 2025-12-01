@@ -508,21 +508,23 @@ async def create_consultation(
     if not domain_info:
         raise HTTPException(status_code=400, detail="Domínio inválido")
     
-    # Verificar acesso ao domínio
-    if not verificar_acesso_dominio(current_user.plan, consultation_req.domain):
-        plano_config = get_plano_config(current_user.plan)
-        raise HTTPException(
-            status_code=403,
-            detail=f"Seu plano {plano_config.nome} não tem acesso a este domínio. Faça upgrade para acessar."
-        )
-    
-    # Verificar limite de consultas
-    limite = verificar_limite_consultas(current_user.plan, current_user.consultas_mes_atual)
-    if not limite["pode_usar"]:
-        raise HTTPException(
-            status_code=402,
-            detail=f"Limite de consultas atingido ({limite['usado']}/{limite['limite']}). Faça upgrade para mais consultas."
-        )
+    # Admin Master tem acesso pleno - bypass de limites
+    if not is_admin_master(current_user):
+        # Verificar acesso ao domínio
+        if not verificar_acesso_dominio(current_user.plan, consultation_req.domain):
+            plano_config = get_plano_config(current_user.plan)
+            raise HTTPException(
+                status_code=403,
+                detail=f"Seu plano {plano_config.nome} não tem acesso a este domínio. Faça upgrade para acessar."
+            )
+        
+        # Verificar limite de consultas
+        limite = verificar_limite_consultas(current_user.plan, current_user.consultas_mes_atual)
+        if not limite["pode_usar"]:
+            raise HTTPException(
+                status_code=402,
+                detail=f"Limite de consultas atingido ({limite['usado']}/{limite['limite']}). Faça upgrade para mais consultas."
+            )
     
     try:
         # ULTRA: Classificar automaticamente se não especificado domínio correto
