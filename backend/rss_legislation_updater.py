@@ -104,26 +104,44 @@ class RSSLegislationUpdater:
         except Exception as e:
             logger.warning(f"Erro ao salvar ID processado: {str(e)}")
     
-    def fetch_rss_feed(self) -> List[Dict[str, Any]]:
-        """Busca feed RSS do Planalto
+    def fetch_rss_feed(self, retry=3) -> List[Dict[str, Any]]:
+        """Busca feed RSS do Planalto com retry
         
+        Args:
+            retry: Número de tentativas
+            
         Returns:
             Lista de entradas do feed
         """
-        try:
-            logger.info(f"📡 Buscando feed RSS: {RSS_URL}")
-            feed = feedparser.parse(RSS_URL)
-            
-            if feed.bozo:
-                logger.error(f"Erro ao parsear RSS: {feed.bozo_exception}")
-                return []
-            
-            logger.info(f"✅ Feed obtido: {len(feed.entries)} entradas")
-            return feed.entries
-            
-        except Exception as e:
-            logger.error(f"❌ Erro ao buscar RSS: {str(e)}")
-            return []
+        for attempt in range(retry):
+            try:
+                logger.info(f"📡 Tentativa {attempt + 1}/{retry}: Buscando feed RSS")
+                
+                # Tentar com requests primeiro (mais confiável)
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                }
+                response = requests.get(RSS_URL, headers=headers, timeout=30)
+                response.raise_for_status()
+                
+                feed = feedparser.parse(response.content)
+                
+                if feed.bozo and hasattr(feed, 'bozo_exception'):
+                    logger.warning(f"⚠️ Aviso RSS: {feed.bozo_exception}")
+                
+                if feed.entries:
+                    logger.info(f"✅ Feed obtido: {len(feed.entries)} entradas")
+                    return feed.entries
+                
+            except Exception as e:
+                logger.warning(f"⚠️ Tentativa {attempt + 1} falhou: {str(e)}")
+                if attempt < retry - 1:
+                    import time
+                    time.sleep(3)
+                continue
+        
+        logger.error(f"❌ Todas as tentativas falharam")
+        return []
     
     def filter_new_entries(
         self,
