@@ -414,7 +414,7 @@ async def main():
     logger.info("="*70)
     logger.info("POPULAÇÃO MASSIVA DO BANCO RAG - DOUTOR LEGIS 2.0 ULTRA")
     logger.info("="*70)
-    logger.info()
+    print()
     
     # Inicializar componentes
     pinecone_api_key = os.getenv("PINECONE_API_KEY")
@@ -429,7 +429,7 @@ async def main():
     logger.info("📊 ESTATÍSTICAS INICIAIS")
     initial_stats = pinecone_manager.get_index_stats()
     logger.info(f"   Total de vetores: {initial_stats.get('total_vector_count', 0)}")
-    logger.info()
+    print()
     
     # Processar cada domínio
     total_added = 0
@@ -449,28 +449,28 @@ async def main():
     logger.info("="*70)
     logger.info("RESUMO DA POPULAÇÃO")
     logger.info("="*70)
-    logger.info()
+    print()
     
     final_stats = pinecone_manager.get_index_stats()
     logger.info(f"📊 ESTATÍSTICAS FINAIS:")
     logger.info(f"   Total de vetores no índice: {final_stats.get('total_vector_count', 0)}")
     logger.info(f"   Vetores adicionados nesta execução: {total_added}")
-    logger.info()
+    print()
     
     logger.info(f"📦 DOMÍNIOS POPULADOS:")
     for domain, count in domains_processed:
         logger.info(f"   ✓ {domain}: +{count} vetores")
     
-    logger.info()
+    print()
     logger.info("="*70)
     logger.info("✅ POPULAÇÃO CONCLUÍDA COM SUCESSO!")
     logger.info("="*70)
-    logger.info()
+    print()
     logger.info("💡 PRÓXIMOS PASSOS:")
     logger.info("   1. Teste o sistema com consultas dos domínios populados")
     logger.info("   2. Adicione mais jurisprudências e súmulas")
     logger.info("   3. Monitore a precisão das respostas")
-    logger.info()
+    print()
 
 
 if __name__ == "__main__":
